@@ -1,148 +1,131 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Риск-Калькулятор</title>
-<style>
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: #0e0e0e;
-  color: #f0f0f0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  overflow: hidden;
-}
-.container {
-  background: #1e1e1e;
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
-  width: 600px;
-  max-width: 95vw;
-  font-size: 1.1rem;
-}
-h2 {
-  text-align: center;
-  margin-bottom: 1.2rem;
-  color: #00ffaa;
-}
-label {
-  display: block;
-  margin-top: 1rem;
-  font-weight: bold;
-}
-input {
-  margin-top: .3rem;
-  padding: 10px;
-  width: 100%;
-  border-radius: 8px;
-  border: none;
-  background: #2b2b2b;
-  color: #fff;
-  font-size: 1rem;
-}
-.result {
-  margin-top: 1.5rem;
-  background: #2a2a2a;
-  padding: 1rem;
-  border-radius: 10px;
-  line-height: 1.6;
-  user-select: text;
-  font-size: 1.05rem;
-  word-wrap: break-word;
-}
-.result strong {
-  color: #00ffaa;
-}
-#copyBtn {
-  margin-top: 1rem;
-  padding: 10px;
-  background: #00ffaa;
-  color: #000;
-  border: none;
-  border-radius: 8px;
-  width: 100%;
-  font-weight: bold;
-  font-size: 1rem;
-  cursor: pointer;
-  display: none;
-}
-#copyBtn:hover {
-  background: #00e69d;
-}
-#copyNotification {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0, 255, 170, 0.3);
-  color: #fff;
-  padding: 1rem 2rem;
-  border-radius: 12px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  z-index: 1000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .3s ease;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-}
-#copyNotification.show {
-  opacity: 1;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Риск калькулятор</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0e0e0e;
+      color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .container {
+      background: #1e1e1e;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
+      width: 600px;
+      max-width: 95vw;
+      font-size: 1.1rem;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1.2rem;
+      color: #00ffaa;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input {
+      margin-top: .3rem;
+      padding: 10px;
+      width: 100%;
+      border-radius: 8px;
+      border: none;
+      background: #2b2b2b;
+      color: #fff;
+      font-size: 1rem;
+    }
+    .result {
+      margin-top: 1.5rem;
+      background: #2a2a2a;
+      padding: 1rem;
+      border-radius: 10px;
+      line-height: 1.6;
+      user-select: text;
+      font-size: 1.05rem;
+      word-wrap: break-word;
+    }
+    .result strong {
+      color: #00ffaa;
+    }
+    #copyBtn {
+      margin-top: 1rem;
+      padding: 10px;
+      background: #00ffaa;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      width: 100%;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      display: none;
+      transition: all 0.3s ease;
+    }
+    #copyBtn:hover {
+      background: #00e69d;
+    }
+    #copyBtn.glow {
+      background: #00ffaa;
+      box-shadow: 0 0 15px #00ffaa;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-  <h2>Риск-Калькулятор</h2>
+  <div class="container">
+    <h2>Риск калькулятор</h2>
 
-  <label for="deposit">Депозит ($):</label>
-  <input type="number" id="deposit" value="10000" oninput="calculate()">
+    <label for="deposit">Депозит ($):</label>
+    <input type="number" id="deposit" value="10000" oninput="calculate()">
 
-  <label for="riskPercent">Риск на сделку (%):</label>
-  <input type="number" id="riskPercent" value="1" oninput="calculate()">
+    <label for="riskPercent">Риск на сделку (%):</label>
+    <input type="number" id="riskPercent" value="1" oninput="calculate()">
 
-  <label for="CoinPrice">Цена монеты ($):</label>
-  <input type="number" id="CoinPrice" value="60000" oninput="calculate()">
+    <label for="CoinPrice">Цена монеты ($):</label>
+    <input type="number" id="CoinPrice" value="60000" oninput="calculate()">
 
-  <label for="atr">ATR (14):</label>
-  <input type="number" id="atr" value="1200" oninput="calculate()">
+    <label for="atr">ATR (14):</label>
+    <input type="number" id="atr" value="1200" oninput="calculate()">
 
-  <div class="result" id="result"></div>
-  <button id="copyBtn" onclick="copyResultToClipboard()" title="Скопировать результат в буфер обмена">В буфер обмена</button>
-</div>
+    <div class="result" id="result"></div>
+    <button id="copyBtn" onclick="copyResultToClipboard()">Копировать в буфер</button>
+  </div>
 
-<div id="copyNotification">Скопировано!</div>
+  <script>
+    function calculate() {
+      const deposit = parseFloat(document.getElementById("deposit").value);
+      const riskPercent = parseFloat(document.getElementById("riskPercent").value);
+      const CoinPrice = parseFloat(document.getElementById("CoinPrice").value);
+      const atr = parseFloat(document.getElementById("atr").value);
+      const resultDiv = document.getElementById("result");
+      const copyBtn = document.getElementById("copyBtn");
 
-<script>
-function calculate() {
-  const deposit = parseFloat(document.getElementById("deposit").value);
-  const riskPercent = parseFloat(document.getElementById("riskPercent").value);
-  const CoinPrice = parseFloat(document.getElementById("CoinPrice").value);
-  const atr = parseFloat(document.getElementById("atr").value);
-  const resultDiv = document.getElementById("result");
-  const copyBtn = document.getElementById("copyBtn");
+      if ([deposit, riskPercent, CoinPrice, atr].some(v => isNaN(v) || v <= 0)) {
+        resultDiv.innerHTML = "<span style='color:yellow'>Пожалуйста, заполните все поля корректно!</span>";
+        copyBtn.style.display = "none";
+        return;
+      }
 
-  if ([deposit, riskPercent, CoinPrice, atr].some(v => isNaN(v) || v <= 0)) {
-    resultDiv.innerHTML = "<span style='color:yellow'>Пожалуйста, заполните все поля корректно!</span>";
-    copyBtn.style.display = "none";
-    return;
-  }
+      const riskAmount = deposit * (riskPercent / 100);
+      const stop = atr * 0.4;
+      const take = atr * 0.8;
+      const CoinSize = riskAmount / stop;
+      const positionSize = CoinSize * CoinPrice;
+      const stopLoss = CoinPrice - stop;
+      const takeProfit = CoinPrice + take;
+      const rrRatio = take / stop;
 
-  const riskAmount = deposit * (riskPercent / 100);
-  const stop = atr * 0.4;
-  const take = atr * 0.8;
-  const CoinSize = riskAmount / stop;
-  const positionSize = CoinSize * CoinPrice;
-  const stopLoss = CoinPrice - stop;
-  const takeProfit = CoinPrice + take;
-  const rrRatio = take / stop;
-
-  resultDiv.innerHTML = `
+      resultDiv.innerHTML = `
 <strong>Риск в $:</strong> $${riskAmount.toFixed(2)}<br>
 <strong>Стоп (0.4 ATR):</strong> $${stop.toFixed(2)}<br>
 <strong>Тейк (0.8 ATR):</strong> $${take.toFixed(2)}<br>
@@ -153,19 +136,27 @@ function calculate() {
 <strong>Тейк-профит:</strong> $${takeProfit.toFixed(2)}<br>
 <strong>Соотношение прибыль/риск:</strong> ${rrRatio.toFixed(1)} : 1
 `;
-  copyBtn.style.display = "block";
-}
+      copyBtn.textContent = "Копировать в буфер";
+      copyBtn.classList.remove("glow");
+      copyBtn.style.display = "block";
+    }
 
-function copyResultToClipboard() {
-  const text = document.getElementById("result").innerText;
-  navigator.clipboard.writeText(text).then(() => {
-    const note = document.getElementById("copyNotification");
-    note.classList.add("show");
-    setTimeout(() => note.classList.remove("show"), 2000);
-  });
-}
+    function copyResultToClipboard() {
+      const text = document.getElementById("result").innerText;
+      const btn = document.getElementById("copyBtn");
 
-window.addEventListener("DOMContentLoaded", calculate);
-</script>
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = "Скопировано!";
+        btn.classList.add("glow");
+
+        setTimeout(() => {
+          btn.textContent = "Копировать в буфер";
+          btn.classList.remove("glow");
+        }, 2000);
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", calculate);
+  </script>
 </body>
 </html>
