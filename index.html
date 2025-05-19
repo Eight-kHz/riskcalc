@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Риск калькулятор</title>
   <style>
+	:root {
+	  --accent: #00ffaa;
+	  --shadow-color: rgba(0, 255, 170, 0.3);
+	  --copy-hover: #00db8b;
+	}
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -17,18 +22,38 @@
       overflow: hidden;
     }
     .container {
-      background: #1e1e1e;
-      padding: 2rem;
-      border-radius: 15px;
-      box-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
-      width: 600px;
-      max-width: 95vw;
-      font-size: 1.1rem;
-    }
+	  background: #1e1e1e;
+	  padding: 2rem;
+	  border-radius: 15px;
+	  box-shadow: 0 0 15px var(--shadow-color);
+	  width: 600px;
+	  max-width: 95vw;
+	  font-size: 1.1rem;
+	}
     h2 {
       text-align: center;
-      margin-bottom: 1.2rem;
-      color: #00ffaa;
+      margin-bottom: 0.8rem;
+      color: var(--accent);
+    }
+    .trade-toggle {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .trade-toggle button {
+      background: transparent;
+      color: #fff;
+      border: none;
+      padding: 10px 14px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .trade-toggle button.active {
+      background: var(--accent);
+      color: #000;
+      border-radius: 8px;
     }
     label {
       display: block;
@@ -36,9 +61,9 @@
       font-weight: bold;
     }
     input {
-      margin-top: .3rem;
+      margin-top: .2rem;
       padding: 10px;
-      width: 100%;
+      width: 97%;
       border-radius: 8px;
       border: none;
       background: #2b2b2b;
@@ -56,12 +81,12 @@
       word-wrap: break-word;
     }
     .result strong {
-      color: #00ffaa;
+      color: var(--accent);
     }
     #copyBtn {
       margin-top: 1rem;
       padding: 10px;
-      background: #00ffaa;
+      background: var(--accent);
       color: #000;
       border: none;
       border-radius: 8px;
@@ -73,74 +98,194 @@
       transition: all 0.3s ease;
     }
     #copyBtn:hover {
-      background: #00e69d;
-    }
+	  background: var(--copy-hover);
+	}
     #copyBtn.glow {
-      background: #00ffaa;
-      box-shadow: 0 0 15px #00ffaa;
+      background: var(--accent);
+      box-shadow: 0 0 15px var(--accent);
     }
+    .risk-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: .5rem;
+    }
+    .risk-toggle {
+      display: flex;
+      background: #2b2b2b;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .risk-toggle button {
+      background: transparent;
+      color: #fff;
+      border: none;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+    .risk-toggle button.active {
+      background: var(--accent);
+      color: #000;
+    }
+    .risk-row input {
+      flex: 1;
+    }
+	.deal-toggle {
+	  display: flex;
+	  width: 100%;
+	  background: #2b2b2b;
+	  border-radius: 8px;
+	  overflow: hidden;
+	  margin-bottom: 1rem;
+	}
+
+	.deal-toggle button {
+	  flex: 1;
+	  background: transparent;
+	  color: #fff;
+	  border: none;
+	  padding: 10px 12px;
+	  cursor: pointer;
+	  font-weight: bold;
+	  font-size: 1rem;
+	  text-align: center;
+	  transition: background 0.2s;
+	}
+
+	.deal-toggle button:first-child {
+	  text-align: right;
+	  padding-left: 14px;
+	}
+
+	.deal-toggle button:last-child {
+	  text-align: left;
+	  padding-right: 14px;
+	}
+
+	.deal-toggle button.active {
+	  background: var(--accent);
+	  color: #000;
+	}	
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Риск калькулятор</h2>
 
-    <label for="deposit">Депозит ($):</label>
+    <div class="deal-toggle">
+	  <button id="btnLong" onclick="setTradeType('long')">Лонг</button>
+	  <button id="btnShort" onclick="setTradeType('short')">Шорт</button>
+	</div>
+
+    <label for="deposit">Депозит:</label>
     <input type="number" id="deposit" value="10000" oninput="calculate()">
 
-    <label for="riskPercent">Риск на сделку (%):</label>
-    <input type="number" id="riskPercent" value="1" oninput="calculate()">
+    <label>Риск на сделку:</label>
+    <div class="risk-row">
+      <input type="number" id="riskValue" value="1" oninput="calculate()">
+      <div class="risk-toggle">
+        <button id="btnPercent" onclick="setRiskType('percent')">%</button>
+        <button id="btnFixed" onclick="setRiskType('fixed')">Фикс</button>
+      </div>
+    </div>
 
-    <label for="CoinPrice">Цена монеты ($):</label>
+    <label for="CoinPrice">Цена монеты:</label>
     <input type="number" id="CoinPrice" value="60000" oninput="calculate()">
 
-    <label for="atr">ATR (14):</label>
-    <input type="number" id="atr" value="1200" oninput="calculate()">
+    <label for="atr">ATR (<span id="atrPeriodLabel">14</span>):</label>
+	<div class="risk-row">
+	  <input type="number" id="atr" value="1200" oninput="calculate()">
+	  <div class="risk-toggle">
+		<button id="btnATR14" onclick="setATRPeriod(14)">14</button>
+		<button id="btnATR5" onclick="setATRPeriod(5)">5</button>
+	  </div>
+	</div>
+
 
     <div class="result" id="result"></div>
     <button id="copyBtn" onclick="copyResultToClipboard()">Копировать в буфер</button>
   </div>
-
   <script>
+    let currentRiskType = 'percent';
+    let currentTradeType = 'long';
+	let currentATRPeriod = 14;
+	
+    function setRiskType(type) {
+      currentRiskType = type;
+      document.getElementById("btnPercent").classList.toggle("active", type === "percent");
+      document.getElementById("btnFixed").classList.toggle("active", type === "fixed");
+      calculate();
+    }
+
+    function setTradeType(type) {
+      currentTradeType = type;
+      document.getElementById("btnLong").classList.toggle("active", type === "long");
+      document.getElementById("btnShort").classList.toggle("active", type === "short");
+      calculate();
+    }
+
     function calculate() {
       const deposit = parseFloat(document.getElementById("deposit").value);
-      const riskPercent = parseFloat(document.getElementById("riskPercent").value);
+      const riskValue = parseFloat(document.getElementById("riskValue").value);
       const CoinPrice = parseFloat(document.getElementById("CoinPrice").value);
       const atr = parseFloat(document.getElementById("atr").value);
       const resultDiv = document.getElementById("result");
       const copyBtn = document.getElementById("copyBtn");
 
-      if ([deposit, riskPercent, CoinPrice, atr].some(v => isNaN(v) || v <= 0)) {
-        resultDiv.innerHTML = "<span style='color:yellow'>Пожалуйста, заполните все поля корректно!</span>";
+      if ([deposit, riskValue, CoinPrice, atr].some(v => isNaN(v) || v <= 0)) {
+        resultDiv.innerHTML = "<span style='color:white; font-weight:bold;'>⚠️ Пожалуйста, заполните поля корректно!</span>";
         copyBtn.style.display = "none";
         return;
       }
 
-      const riskAmount = deposit * (riskPercent / 100);
-      const stop = atr * 0.4;
-      const take = atr * 0.8;
+      let stopMultiplier = currentATRPeriod === 14 ? 0.4 : 0.6;
+      let takeMultiplier = currentATRPeriod === 14 ? 0.8 : 1.2;
+
+      const stop = atr * stopMultiplier;
+      const take = atr * takeMultiplier;
+      const riskAmount = currentRiskType === 'percent' ? deposit * (riskValue / 100) : riskValue;
       const CoinSize = riskAmount / stop;
       const positionSize = CoinSize * CoinPrice;
-      const stopLoss = CoinPrice - stop;
-      const takeProfit = CoinPrice + take;
+
+      let stopLoss, takeProfit;
+      if (currentTradeType === 'long') {
+        stopLoss = CoinPrice - stop;
+        takeProfit = CoinPrice + take;
+      } else {
+        stopLoss = CoinPrice + stop;
+        takeProfit = CoinPrice - take;
+      }
+
       const rrRatio = take / stop;
 
       resultDiv.innerHTML = `
-<strong>Риск в $:</strong> $${riskAmount.toFixed(2)}<br>
-<strong>Стоп (0.4 ATR):</strong> $${stop.toFixed(2)}<br>
-<strong>Тейк (0.8 ATR):</strong> $${take.toFixed(2)}<br>
-<strong>Размер позиции (монета):</strong> ${CoinSize.toFixed(6)}<br>
-<strong>Объём позиции ($):</strong> $${positionSize.toFixed(2)}<br>
-<strong>Цена входа:</strong> $${CoinPrice.toFixed(2)}<br>
-<strong>Стоп-лосс:</strong> $${stopLoss.toFixed(2)}<br>
-<strong>Тейк-профит:</strong> $${takeProfit.toFixed(2)}<br>
-<strong>Соотношение прибыль/риск:</strong> ${rrRatio.toFixed(1)} : 1
-`;
+		<strong>Риск:</strong> ${riskAmount.toFixed(2)}<br>
+		<strong>Тип сделки:</strong> ${currentTradeType.toUpperCase()}<br>
+		<strong>Стоп (${stopMultiplier} ATR):</strong> ${stop.toFixed(2)}<br>
+		<strong>Тейк (${takeMultiplier} ATR):</strong> ${take.toFixed(2)}<br>
+		<strong>Размер позиции:</strong> ${CoinSize.toFixed(6)}<br>
+		<strong>Объём позиции:</strong> ${positionSize.toFixed(2)}<br>
+		<strong>Цена входа:</strong> ${CoinPrice.toFixed(2)}<br>
+		<strong>Стоп-лосс:</strong> ${stopLoss.toFixed(2)}<br>
+		<strong>Тейк-профит:</strong> ${takeProfit.toFixed(2)}<br>
+		<strong>Соотношение прибыль/риск:</strong> ${rrRatio.toFixed(1)} : 1
+      `;
       copyBtn.textContent = "Копировать в буфер";
       copyBtn.classList.remove("glow");
       copyBtn.style.display = "block";
     }
-
+	
+	function setATRPeriod(period) {
+	  currentATRPeriod = period;
+	  document.getElementById("btnATR14").classList.toggle("active", period === 14);
+	  document.getElementById("btnATR5").classList.toggle("active", period === 5);
+	  document.getElementById("atrPeriodLabel").textContent = period;
+	  calculate();
+	}
+	
     function copyResultToClipboard() {
       const text = document.getElementById("result").innerText;
       const btn = document.getElementById("copyBtn");
@@ -148,7 +293,6 @@
       navigator.clipboard.writeText(text).then(() => {
         btn.textContent = "Скопировано!";
         btn.classList.add("glow");
-
         setTimeout(() => {
           btn.textContent = "Копировать в буфер";
           btn.classList.remove("glow");
@@ -156,7 +300,32 @@
       });
     }
 
-    window.addEventListener("DOMContentLoaded", calculate);
+	function setTradeType(type) {
+	  currentTradeType = type;
+	  document.getElementById("btnLong").classList.toggle("active", type === "long");
+	  document.getElementById("btnShort").classList.toggle("active", type === "short");
+
+	  const root = document.documentElement;
+	  const copyBtn = document.getElementById("copyBtn");
+
+	  if (type === "short") {
+		root.style.setProperty("--accent", "#ff5555");
+		root.style.setProperty("--shadow-color", "rgba(255, 85, 85, 0.3)");
+		root.style.setProperty("--copy-hover", "#ff7777");
+	  } else {
+		root.style.setProperty("--accent", "#00ffaa");
+		root.style.setProperty("--shadow-color", "rgba(0, 255, 170, 0.3)");
+		root.style.setProperty("--copy-hover", "#00db8b");
+	  }
+	  calculate();
+	}
+
+    // Инициализация по умолчанию
+    window.addEventListener("DOMContentLoaded", () => {
+      setRiskType("percent");
+      setTradeType("long");
+	  setATRPeriod(14);
+    });
   </script>
 </body>
 </html>
