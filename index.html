@@ -11,24 +11,41 @@
 	  --copy-hover: #00db8b;
 	}
     body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #0e0e0e;
-      color: #f0f0f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden;
-    }
-    .container {
+	  margin: 0;
+	  font-family: 'Segoe UI', sans-serif;
+	  background: #0e0e0e;
+	  color: #f0f0f0;
+	  display: flex;
+	  justify-content: center;
+	  align-items: flex-start;
+	  min-height: 100vh;
+	  padding: 1rem;
+	  overflow-y: auto;
+	}
+	.container {
 	  background: #1e1e1e;
-	  padding: 2rem;
+	  padding: 1.5rem;
 	  border-radius: 15px;
 	  box-shadow: 0 0 15px var(--shadow-color);
-	  width: 600px;
-	  max-width: 95vw;
-	  font-size: 1.1rem;
+	  width: 100%;
+	  max-width: 600px;
+	  font-size: 1rem;
+	}
+	@media (max-width: 480px) {
+	  .container {
+		padding: 1rem;
+		font-size: 0.95rem;
+	  }
+	  input,
+	  .risk-toggle button,
+	  .deal-toggle button,
+	  #copyBtn {
+		font-size: 0.95rem;
+		padding: 10px;
+	  }
+	  .result {
+		font-size: 0.95rem;
+	  }
 	}
     h2 {
       text-align: center;
