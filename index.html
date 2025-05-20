@@ -314,22 +314,22 @@
             <button id="btnShort" onclick="setTradeType('short')">ШОРТ</button>
          </div>
          <label for="deposit">Депозит:</label>
-         <input type="number" id="deposit" value="10000" oninput="calculate()">
+         <input type="number" id="deposit" value="10000" min="0" step="any" oninput="calculate()">
          <label>Риск на сделку:</label>
          <div class="risk-row">
-            <input type="number" id="riskValue" value="1" oninput="calculate()">
+            <input type="number" id="riskValue" value="1" min="0" step="any" oninput="calculate()">
             <div class="risk-toggle">
                <button id="btnPercent" onclick="setRiskType('percent')">%</button>
                <button id="btnFixed" onclick="setRiskType('fixed')">Фикс</button>
             </div>
          </div>
          <label for="CoinPrice">Цена монеты:</label>
-         <input type="number" id="CoinPrice" value="60000" oninput="calculate()">
+         <input type="number" id="CoinPrice" value="60000" min="0" step="any" oninput="calculate()">
          <label for="atr">ATR (<span id="atrPeriodLabel">14</span>):
-         <a href="#" class="atr-button" onclick="openAtrModal(); return false;">Рассчитать</a>
+         <a href="#" class="atr-button" onclick="event.preventDefault(); openAtrModal();">Рассчитать</a>
          </label>
          <div class="risk-row">
-            <input type="number" id="atr" value="1200" oninput="calculate()">
+            <input type="number" id="atr" value="1200" min="0" step="any" oninput="calculate()">
             <div class="risk-toggle">
                <button id="btnATR14" onclick="setATRPeriod(14)">14</button>
                <button id="btnATR5" onclick="setATRPeriod(5)">5</button>
@@ -355,26 +355,13 @@
          
          function setRiskType(type) {
            currentRiskType = type;
-           document.getElementById("btnPercent").classList.toggle("active", type === "percent");
-           document.getElementById("btnFixed").classList.toggle("active", type === "fixed");
+           toggleActiveButtons(["btnPercent", "btnFixed"], type === "percent" ? "btnPercent" : "btnFixed");
            calculate();
          }
          
-         function setTradeType(type) {
-           currentTradeType = type;
-           document.getElementById("btnLong").classList.toggle("active", type === "long");
-           document.getElementById("btnShort").classList.toggle("active", type === "short");
-           calculate();
-         }
-         
-         function setATRPeriod(period) {
-         currentATRPeriod = period;
-         document.getElementById("atrPeriodLabel").textContent = period;
-         document.getElementById("btnATR14").classList.toggle("active", period === 14);
-         document.getElementById("btnATR5").classList.toggle("active", period === 5);
-         calculate();
-         }
-         
+         function toggleActiveButtons(ids, active) {
+		  ids.forEach(id => document.getElementById(id).classList.toggle("active", id === active));
+		}
          function openAtrModal() {
          document.getElementById('atr-modal').style.display = 'flex';
          const atrInputs = document.getElementById("atr-inputs");
@@ -385,8 +372,8 @@
          ${Array.from({ length: currentATRPeriod }, (_, i) => `
           <tr>
          <td>${i + 1}</td>
-         <td><input type="number" step="0.01" id="high${i}"></td>
-         <td><input type="number" step="0.01" id="low${i}"></td>
+         <td><input type="number" min="0" step="0.01" id="high${i}"></td>
+         <td><input type="number" min="0" step="0.01" id="low${i}"></td>
           </tr>
          `).join('')}
          </tbody>
@@ -424,7 +411,15 @@
          calculate();
          }
          }
-         
+		 
+         function formatNumber(value) {
+		  if (value === 0) return "0.00";
+		  if (value < 0.000001) return value.toExponential(2);
+		  if (value < 1) return value.toFixed(8);
+		  if (value < 100) return value.toFixed(6);
+		  return value.toFixed(2);
+		}
+		
          function calculate() {
            const deposit = parseFloat(document.getElementById("deposit").value);
            const riskValue = parseFloat(document.getElementById("riskValue").value);
@@ -440,8 +435,18 @@
            let stopMultiplier = currentATRPeriod === 14 ? 0.4 : 0.6;
            let takeMultiplier = currentATRPeriod === 14 ? 0.8 : 1.2;
            const stop = atr * stopMultiplier;
+		   if (stop < 0.01) {
+			  resultDiv.innerHTML = "<span style='color:white; font-weight:bold;'>⚠️ ATR слишком мал, позиция неадекватно большая</span>";
+			  copyBtn.style.display = "none";
+			  return;
+			}
            const take = atr * takeMultiplier;
            const riskAmount = currentRiskType === 'percent' ? deposit * (riskValue / 100) : riskValue;
+		   if (riskAmount > deposit) {
+			  resultDiv.innerHTML = "<span style='color:white; font-weight:bold;'>⚠️ Риск превышает депозит!</span>";
+			  copyBtn.style.display = "none";
+			  return;
+			}
            const CoinSize = riskAmount / stop;
            const positionSize = CoinSize * CoinPrice;
            let stopLoss, takeProfit;
@@ -454,12 +459,12 @@
            }
            const rrRatio = take / stop;
            resultDiv.innerHTML = `
-         <strong>Риск:</strong> ${riskAmount.toFixed(2)}<br>
+         <strong>Риск:</strong> ${formatNumber(riskAmount)}<br>
          <strong>Тип сделки:</strong> ${currentTradeType.toUpperCase()}<br>
          <strong>Стоп (${stopMultiplier} ATR):</strong> ${stop.toFixed(2)}<br>
          <strong>Тейк (${takeMultiplier} ATR):</strong> ${take.toFixed(2)}<br>
-         <strong>Размер позиции:</strong> ${CoinSize.toFixed(6)}<br>
-         <strong>Объём позиции:</strong> ${positionSize.toFixed(2)}<br>
+         <strong>Размер позиции:</strong> ${formatNumber(CoinSize)}<br>
+         <strong>Объём позиции:</strong> ${formatNumber(positionSize)}<br>
          <strong>Цена входа:</strong> ${CoinPrice.toFixed(2)}<br>
          <strong>Стоп-лосс:</strong> ${stopLoss.toFixed(2)}<br>
          <strong>Тейк-профит:</strong> ${takeProfit.toFixed(2)}<br>
@@ -468,13 +473,12 @@
            copyBtn.classList.remove("glow");
            copyBtn.style.display = "block";
          }
-         function setATRPeriod(period) {
-         currentATRPeriod = period;
-         document.getElementById("btnATR14").classList.toggle("active", period === 14);
-         document.getElementById("btnATR5").classList.toggle("active", period === 5);
-         document.getElementById("atrPeriodLabel").textContent = period;
-         calculate();
-         }
+         function setATRPeriod(p) {
+		  currentATRPeriod = p;
+		  toggleActiveButtons(["btnATR14", "btnATR5"], `btnATR${p}`);
+		  document.getElementById("atrPeriodLabel").textContent = p;
+		  calculate();
+		}
          
          function copyResultToClipboard() {
            const text = document.getElementById("result").innerText;
@@ -491,18 +495,12 @@
          
          function setTradeType(type) {
          currentTradeType = type;
-         document.getElementById("btnLong").classList.toggle("active", type === "long");
-         document.getElementById("btnShort").classList.toggle("active", type === "short");
+         toggleActiveButtons(["btnLong", "btnShort"], type === "long" ? "btnLong" : "btnShort");
          const root = document.documentElement;
-         if (type === "short") {
-         root.style.setProperty("--accent", "#ff5555");
-         root.style.setProperty("--shadow-color", "rgba(255, 85, 85, 0.3)");
-         root.style.setProperty("--copy-hover", "#e14444");
-         } else {
-         root.style.setProperty("--accent", "#00ffaa");
-         root.style.setProperty("--shadow-color", "rgba(0, 255, 170, 0.3)");
-         root.style.setProperty("--copy-hover", "#00db8b");
-         }
+         const isShort = type === "short";
+		root.style.setProperty("--accent", isShort ? "#ff5555" : "#00ffaa");
+		root.style.setProperty("--shadow-color", isShort ? "rgba(255, 85, 85, 0.3)" : "rgba(0, 255, 170, 0.3)");
+		root.style.setProperty("--copy-hover", isShort ? "#e14444" : "#00db8b");
          calculate();
          }
          
