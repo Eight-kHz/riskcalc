@@ -1,514 +1,717 @@
 <!DOCTYPE html>
 <html lang="ru">
-   <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="icon" type="image/png" href="favicon.png">
-      <title>Risk Calc</title>
-      <style>
-         :root {
-         --accent: #00ffaa;
-         --shadow-color: rgba(0, 255, 170, 0.3);
-         --copy-hover: #00db8b;
-         }
-         body {
-         margin: 0;
-         font-family: 'Segoe UI', sans-serif;
-         background: #0e0e0e;
-         color: #f0f0f0;
-         display: flex;
-         justify-content: center;
-         align-items: flex-start;
-         min-height: 90vh;
-         padding: 1rem;
-         overflow-y: auto;
-         }
-         .container {
-         background: #1e1e1e;
-         padding: 1.5rem;
-         padding-top: 0.8rem;
-         border-radius: 15px;
-         box-shadow: 0 0 15px var(--shadow-color);
-         width: 100%;
-         max-width: 600px;
-         font-size: 1rem;
-         }
-         @media (max-width: 480px) {
-         .container {
-         padding: 1rem;
-         font-size: 0.95rem;
-         }
-         input,
-         .risk-toggle button,
-         .deal-toggle button,
-         #copyBtn {
-         font-size: 0.95rem;
-         padding: 10px;
-         }
-         .result {
-         font-size: 0.95rem;
-         }
-         }
-         h2 {
-         margin-top: 0rem;
-         text-align: center;
-         margin-bottom: 0.8rem;
-         color: var(--accent);
-         }
-         .trade-toggle {
-         display: flex;
-         justify-content: center;
-         margin-bottom: 1rem;
-         }
-         .trade-toggle button {
-         background: transparent;
-         color: #fff;
-         border: none;
-         padding: 10px 14px;
-         font-weight: bold;
-         font-size: 1rem;
-         cursor: pointer;
-         transition: background 0.2s;
-         }
-         .trade-toggle button.active {
-         background: var(--accent);
-         color: #000;
-         border-radius: 8px;
-         }
-         label {
-         display: block;
-         margin-top: 0.5rem;
-         font-weight: bold;
-         }
-         input {
-         margin-top: .2rem;
-         padding: 10px;
-         width: 100%;
-         border-radius: 8px;
-         border: 1px solid transparent;
-         background: #2b2b2b;
-         color: #fff;
-         font-size: 1rem;
-         box-sizing: border-box;
-         }
-         input:focus {
-         outline: none;
-         box-shadow: 0 0 5px var(--accent);
-         border: 1px solid var(--accent);
-         }
-         .result {
-         margin-top: 1.5rem;
-         background: #2a2a2a;
-         padding: 1rem;
-         border-radius: 10px;
-         line-height: 1.6;
-         user-select: text;
-         font-size: 1.05rem;
-         word-wrap: break-word;
-         }
-         .result strong {
-         color: var(--accent);
-         }
-         #copyBtn {
-         margin-top: 1rem;
-         padding: 10px;
-         background: var(--accent);
-         color: #000;
-         border: none;
-         border-radius: 8px;
-         width: 100%;
-         font-weight: bold;
-         font-size: 1rem;
-         cursor: pointer;
-         display: none;
-         transition: all 0.3s ease;
-         }
-         #copyBtn:hover {
-         background: var(--copy-hover);
-         }
-         #copyBtn.glow {
-         background: var(--accent);
-         box-shadow: 0 0 15px var(--accent);
-         }
-         .risk-row {
-         display: flex;
-         align-items: center;
-         gap: 10px;
-         margin-top: .5rem;
-         }
-         .risk-toggle {
-         display: flex;
-         background: #2b2b2b;
-         border-radius: 8px;
-         overflow: hidden;
-         }
-         .risk-toggle button {
-         background: transparent;
-         color: #fff;
-         border: none;
-         padding: 10px 12px;
-         cursor: pointer;
-         font-weight: bold;
-         font-size: 1rem;
-         transition: background 0.2s;
-         }
-         .risk-toggle button.active {
-         background: var(--accent);
-         color: #000;
-         }
-         .risk-row input {
-         flex: 1;
-         }
-         .deal-toggle {
-         display: flex;
-         width: 100%;
-         background: #2b2b2b;
-         border-radius: 8px;
-         overflow: hidden;
-         margin-bottom: 1rem;
-         }
-         .deal-toggle button {
-         flex: 1;
-         background: transparent;
-         color: #fff;
-         border: none;
-         padding: 10px 12px;
-         cursor: pointer;
-         font-weight: bold;
-         font-size: 1rem;
-         text-align: center;
-         transition: background 0.2s;
-         }
-         .deal-toggle button:first-child {
-         text-align: right;
-         padding-left: 14px;
-         }
-         .deal-toggle button:last-child {
-         text-align: left;
-         padding-right: 14px;
-         }
-         .deal-toggle button.active {
-         background: var(--accent);
-         color: #000;
-         }
-         .atr-button {
-         background: var(--accent);
-         color: #000;
-         text-decoration: none;
-         font-weight: bold;
-         padding: 2px 6px;
-         border-radius: 8px;
-         transition: background 0.3s ease, box-shadow 0.3s ease;
-         white-space: nowrap;
-         font-size: 0.8rem;
-         }
-         .atr-button:hover {
-         background: var(--copy-hover);
-         box-shadow: 0 0 10px var(--shadow-color);
-         }
-         #atr-modal {
-         position: fixed;
-         top: 0;
-         left: 0;
-         right: 0;
-         bottom: 0;
-         background: rgba(0, 0, 0, 0.7);
-         backdrop-filter: blur(4px);
-         z-index: 1000;
-         display: flex;
-         justify-content: center;
-         align-items: flex-start; 
-         overflow-y: auto;
-         padding-top: 4vh;
-         padding-bottom: 4vh;
-         }
-         #atr-modal .container {
-         background: #1e1e1e;
-         padding: 1rem 1.2rem;
-         border-radius: 12px;
-         box-shadow: 0 0 10px var(--shadow-color);
-         width: 100%;
-         max-width: 400px;
-         position: relative;
-         }
-         #atr-modal h2 {
-         text-align: center;
-         margin: 0 0 0.8rem 0;
-         color: var(--accent);
-         }
-         #atr-modal table {
-         border-collapse: collapse;
-         width: 100%;
-         }
-         #atr-modal th,
-         #atr-modal td {
-         padding: 3px 2px;
-         text-align: center;
-         }
-         #atr-modal th {
-         color: var(--accent);
-         background: #262626;
-         }
-         #atr-modal td {
-         background: #2c2c2c;
-         }
-         #atr-modal input {
-         width: 90%;
-         padding: 3px 4px;
-         font-size: 1rem;
-         background: #3a3a3a;
-         color: #fff;
-         border: 1px solid transparent;
-         border-radius: 4px;
-         }
-         #atr-modal input:focus {
-         outline: none;
-         border: 1px solid var(--accent);
-         box-shadow: 0 0 4px var(--accent);
-         }
-         #atr-modal .calc-btn {
-         margin-top: 1rem;
-         width: 100%;
-         text-align: center;
-         padding: 8px;
-         font-size: 1rem;
-         font-weight: bold;
-         background: var(--accent);
-         color: #000;
-         border: none;
-         border-radius: 6px;
-         cursor: pointer;
-         }
-         #atr-modal .atr-result {
-         margin-top: 0.8rem;
-         background: #252525;
-         padding: 0.6rem 0.8rem;
-         border-radius: 6px;
-         font-size: 1rem;
-         text-align: center;
-         font-weight: bold;
-         }
-         .close-btn {
-         position: absolute;
-         top: 10px;
-         right: 14px;
-         background: transparent;
-         color: #888;
-         border: none;
-         font-size: 1.8rem;
-         font-weight: bold;
-         cursor: pointer;
-         transition: color 0.2s ease;
-         z-index: 10;
-         }
-         .close-btn:hover {
-         color: var(--accent);
-         }
-      </style>
-   </head>
-   <body>
-      <div class="container">
-         <h2>РИСК КАЛЬКУЛЯТОР</h2>
-         <div class="deal-toggle">
-            <button id="btnLong" onclick="setTradeType('long')">ЛОНГ</button>
-            <button id="btnShort" onclick="setTradeType('short')">ШОРТ</button>
-         </div>
-         <label for="deposit">Депозит:</label>
-         <input type="number" id="deposit" value="10000" min="0" step="any" oninput="calculate()">
-         <label>Риск на сделку:</label>
-         <div class="risk-row">
-            <input type="number" id="riskValue" value="1" min="0" step="any" oninput="calculate()">
-            <div class="risk-toggle">
-               <button id="btnPercent" onclick="setRiskType('percent')">%</button>
-               <button id="btnFixed" onclick="setRiskType('fixed')">Фикс</button>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/png" href="favicon.png" />
+        <title data-i18n="title">Risk Calc</title>
+        <style>
+            :root {
+                --accent: #00ffaa;
+                --shadow-color: rgba(0, 255, 170, 0.3);
+                --copy-hover: #00db8b;
+            }
+            body {
+                margin: 0;
+                font-family: "Segoe UI", sans-serif;
+                background: #0e0e0e;
+                color: #f0f0f0;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                min-height: 90vh;
+                padding: 1rem;
+                overflow-y: auto;
+            }
+            .container {
+                position: relative;
+                background: #1e1e1e;
+                padding: 1.2rem;
+                padding-top: 0.8rem;
+                border-radius: 15px;
+                box-shadow: 0 0 15px var(--shadow-color);
+                width: 100%;
+                max-width: 600px;
+                font-size: 1rem;
+            }
+            @media (max-width: 480px) {
+                .container {
+                    padding: 1rem;
+                    font-size: 0.95rem;
+                }
+                input,
+                .risk-toggle button,
+                .deal-toggle button,
+                #copyBtn {
+                    font-size: 0.95rem;
+                    padding: 10px;
+                }
+                .result {
+                    font-size: 0.95rem;
+                }
+            }
+            .lang-toggle {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                background: #161b22;
+                border: 1px solid #30363d;
+                border-radius: 20px;
+                padding: 0.1rem 0.5rem;
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+            }
+            .lang-toggle span {
+                margin: 0 0.25rem;
+                font-weight: bold;
+            }
+            .lang-toggle .active {
+                color: var(--accent);
+            }
+            h2 {
+                margin-top: 0rem;
+                text-align: center;
+                margin-bottom: 0.8rem;
+                color: var(--accent);
+            }
+            .trade-toggle {
+                display: flex;
+                justify-content: center;
+                margin-bottom: 1rem;
+            }
+            .trade-toggle button {
+                background: transparent;
+                color: #fff;
+                border: none;
+                padding: 10px 14px;
+                font-weight: bold;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            .trade-toggle button.active {
+                background: var(--accent);
+                color: #000;
+                border-radius: 8px;
+            }
+            label {
+                display: block;
+                margin-top: 0.5rem;
+                font-weight: bold;
+            }
+            input {
+                margin-top: 0.2rem;
+                padding: 10px;
+                width: 100%;
+                border-radius: 8px;
+                border: 1px solid transparent;
+                background: #2b2b2b;
+                color: #fff;
+                font-size: 1rem;
+                box-sizing: border-box;
+            }
+            input:focus {
+                outline: none;
+                box-shadow: 0 0 5px var(--accent);
+                border: 1px solid var(--accent);
+            }
+            .result {
+                margin-top: 1rem;
+                background: #2a2a2a;
+                padding: 0.7rem;
+                border-radius: 10px;
+                line-height: 1.6;
+                user-select: text;
+                font-size: 1.05rem;
+                word-wrap: break-word;
+            }
+            .result strong {
+                color: var(--accent);
+            }
+            .result-container {
+                position: relative;
+            }
+            .result-header {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+            }
+            #copyBtn {
+                background: none;
+                border: none;
+                color: var(--accent, #00ffaa);
+                font-size: 25px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: color 0.2s;
+            }
+            #copyBtn:hover {
+                color: var(--copy-hover, #00db8b);
+            }
+            #copyBtn.glow {
+                animation: glowPulse 1s infinite alternate;
+            }
+            @keyframes glowPulse {
+                from {
+                    text-shadow: 0 0 5px var(--accent, #00ffaa);
+                }
+                to {
+                    text-shadow: 0 0 15px var(--accent, #00ffaa);
+                }
+            }
+            .risk-row {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-top: 0.5rem;
+            }
+            .risk-toggle {
+                display: flex;
+                background: #2b2b2b;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            .risk-toggle button {
+                background: transparent;
+                color: #fff;
+                border: none;
+                padding: 10px 12px;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 1rem;
+                transition: background 0.2s;
+            }
+            .risk-toggle button.active {
+                background: var(--accent);
+                color: #000;
+            }
+            .risk-row input {
+                flex: 1;
+            }
+            .deal-toggle {
+                display: flex;
+                width: 100%;
+                background: #2b2b2b;
+                border-radius: 8px;
+                overflow: hidden;
+                margin-bottom: 1rem;
+            }
+
+            .deal-toggle button {
+                flex: 1;
+                background: transparent;
+                color: #fff;
+                border: none;
+                padding: 5px 12px;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 1.4rem;
+                text-align: center;
+                transition: background 0.2s;
+                position: relative;
+                z-index: 1;
+            }
+
+            .deal-toggle button:first-child {
+                text-align: right;
+                padding-left: 14px;
+            }
+
+            .deal-toggle button:last-child {
+                text-align: left;
+                padding-right: 14px;
+            }
+
+            .deal-toggle button.active {
+                background: var(--accent);
+                color: #000;
+            }
+
+            .deal-toggle button.active::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 0;
+                background-image: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'>\
+<polyline points='0,100 3,88 7,94 10,70 14,92 17,66 21,85 26,61 30,83 34,58 38,75 43,51 47,79 51,42 56,72 60,38 64,68 69,28 73,63 77,34 82,58 86,26 91,52 95,18 100,0' \
+fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
+                background-size: 100% 100%;
+                background-position: 0 0;
+                background-repeat: no-repeat;
+                opacity: 0.2;
+            }
+
+            #btnShort.active::before {
+                transform: scaleX(-1);
+                transform-origin: center;
+            }
+
+            .atr-button {
+                background: var(--accent);
+                color: #000;
+                text-decoration: none;
+                font-weight: bold;
+                padding: 2px 6px;
+                border-radius: 8px;
+                transition: background 0.3s ease, box-shadow 0.3s ease;
+                white-space: nowrap;
+                font-size: 0.85rem;
+            }
+            .atr-button:hover {
+                background: var(--copy-hover);
+                box-shadow: 0 0 10px var(--shadow-color);
+            }
+            #atr-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(4px);
+                z-index: 1000;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                overflow-y: auto;
+                padding-top: 4vh;
+                padding-bottom: 4vh;
+            }
+            #atr-modal .container {
+                background: #1e1e1e;
+                padding: 1rem 1.2rem;
+                border-radius: 12px;
+                box-shadow: 0 0 10px var(--shadow-color);
+                width: 100%;
+                max-width: 400px;
+                position: relative;
+            }
+            #atr-modal h2 {
+                text-align: center;
+                margin: 0 0 0.8rem 0;
+                color: var(--accent);
+            }
+            #atr-modal table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            #atr-modal th,
+            #atr-modal td {
+                padding: 3px 2px;
+                text-align: center;
+            }
+            #atr-modal th {
+                color: var(--accent);
+                background: #262626;
+            }
+            #atr-modal td {
+                font-weight: bold;
+                background: #2c2c2c;
+            }
+            #atr-modal input {
+                width: 90%;
+                padding: 3px 4px;
+                font-size: 1rem;
+                background: #3a3a3a;
+                color: #fff;
+                border: 1px solid transparent;
+                border-radius: 4px;
+            }
+            #atr-modal input:focus {
+                outline: none;
+                border: 1px solid var(--accent);
+                box-shadow: 0 0 4px var(--accent);
+            }
+            #atr-modal .calc-btn {
+                margin-top: 1rem;
+                width: 100%;
+                text-align: center;
+                padding: 8px;
+                font-size: 1rem;
+                font-weight: bold;
+                background: var(--accent);
+                color: #000;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+            #atr-modal .atr-result {
+                margin-top: 0.8rem;
+                background: #252525;
+                padding: 0.6rem 0.8rem;
+                border-radius: 6px;
+                font-size: 1rem;
+                text-align: center;
+                font-weight: bold;
+            }
+            .close-btn {
+                position: absolute;
+                top: 10px;
+                right: 14px;
+                background: transparent;
+                color: #888;
+                border: none;
+                font-size: 1.8rem;
+                font-weight: bold;
+                cursor: pointer;
+                transition: color 0.2s ease;
+                z-index: 10;
+            }
+            .close-btn:hover {
+                color: var(--accent);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="lang-toggle" onclick="toggleLanguage()"><span id="ruLabel" class="active">RU</span> | <span id="enLabel">EN</span></div>
+            <h2 data-i18n="title">РИСК КАЛЬКУЛЯТОР</h2>
+            <div class="deal-toggle">
+                <button id="btnLong" onclick="setTradeType('long')" data-i18n="long">ЛОНГ</button>
+                <button id="btnShort" onclick="setTradeType('short')" data-i18n="short">ШОРТ</button>
             </div>
-         </div>
-         <label for="CoinPrice">Цена монеты:</label>
-         <input type="number" id="CoinPrice" value="60000" min="0" step="any" oninput="calculate()">
-         <label for="atr">ATR (<span id="atrPeriodLabel">14</span>):
-         <a href="#" class="atr-button" onclick="event.preventDefault(); openAtrModal();">Рассчитать</a>
-         </label>
-         <div class="risk-row">
-            <input type="number" id="atr" value="1200" min="0" step="any" oninput="calculate()">
-            <div class="risk-toggle">
-               <button id="btnATR14" onclick="setATRPeriod(14)">14</button>
-               <button id="btnATR5" onclick="setATRPeriod(5)">5</button>
+            <label for="deposit" data-i18n="deposit">Депозит:</label>
+            <input type="number" id="deposit" value="10000" min="0" step="any" oninput="calculate()" />
+            <label data-i18n="risk">Риск на сделку:</label>
+            <div class="risk-row">
+                <input type="number" id="riskValue" value="1" min="0" step="any" oninput="calculate()" />
+                <div class="risk-toggle">
+                    <button id="btnPercent" onclick="setRiskType('percent')">%</button>
+                    <button id="btnFixed" onclick="setRiskType('fixed')" data-i18n="fixed">Фикс</button>
+                </div>
             </div>
-         </div>
-         <div class="result" id="result"></div>
-         <button id="copyBtn" onclick="copyResultToClipboard()">Копировать в буфер</button>
-      </div>
-      <div id="atr-modal" class="modal" style="display:none;">
-         <div class="container">
-            <button class="close-btn" onclick="closeAtrModal()">×</button>
-            <h2>ATR КАЛЬКУЛЯТОР</h2>
-            <div id="atr-inputs">
+            <label for="CoinPrice" data-i18n="coin">Цена монеты:</label>
+            <input type="number" id="CoinPrice" value="60000" min="0" step="any" oninput="calculate()" />
+            <label for="atr">
+                ATR (<span id="atrPeriodLabel">14</span>):
+                <a href="#" class="atr-button" onclick="event.preventDefault(); openAtrModal();" data-i18n="atrCalc">Рассчитать</a>
+            </label>
+            <div class="risk-row">
+                <input type="number" id="atr" value="1200" min="0" step="any" oninput="calculate()" />
+                <div class="risk-toggle">
+                    <button id="btnATR14" onclick="setATRPeriod(14)">14</button>
+                    <button id="btnATR5" onclick="setATRPeriod(5)">5</button>
+                </div>
             </div>
-            <button class="calc-btn" onclick="calculateATR()">Рассчитать</button>
-            <div id="atr-result" class="atr-result"></div>
-         </div>
-      </div>
-      <script>
-         let currentRiskType = 'percent';
-         let currentTradeType = 'long';
-         let currentATRPeriod = 14;
-         
-         function setRiskType(type) {
-           currentRiskType = type;
-           toggleActiveButtons(["btnPercent", "btnFixed"], type === "percent" ? "btnPercent" : "btnFixed");
-           calculate();
-         }
-         
-         function toggleActiveButtons(ids, active) {
-		  ids.forEach(id => document.getElementById(id).classList.toggle("active", id === active));
-		}
-         function openAtrModal() {
-         document.getElementById('atr-modal').style.display = 'flex';
-         const atrInputs = document.getElementById("atr-inputs");
-         atrInputs.innerHTML = `
-         <table>
-         <thead><tr><th>Бар</th><th>High</th><th>Low</th></tr></thead>
-         <tbody>
-         ${Array.from({ length: currentATRPeriod }, (_, i) => `
-          <tr>
-         <td>${i + 1}</td>
-         <td><input type="number" min="0" step="0.01" id="high${i}"></td>
-         <td><input type="number" min="0" step="0.01" id="low${i}"></td>
-          </tr>
-         `).join('')}
-         </tbody>
-         </table>
-         `;
-         document.getElementById("atr-result").textContent = '';
-         }
-         
-         function closeAtrModal() {
-         document.getElementById('atr-modal').style.display = 'none';
-         }
-         document.getElementById('atr-modal').addEventListener('click', function(e) {
-			if (e.target === this) {
-			  closeAtrModal();
-			}
-		  });
-         
-         function calculateATR() {
-         let sum = 0, count = 0;
-         for (let i = 0; i < currentATRPeriod; i++) {
-         const high = parseFloat(document.getElementById(`high${i}`).value);
-         const low = parseFloat(document.getElementById(`low${i}`).value);
-         if (!isNaN(high) && !isNaN(low)) {
-         sum += high - low;
-         count++;
-         }
-         }
-         const resultElem = document.getElementById("atr-result");
-         if (count === 0) {
-         resultElem.textContent = "⚠️ Введите хотя бы одну пару значений High и Low.";
-         } else {
-         const atr = sum / count;
-         resultElem.textContent = `ATR (${count}): ${atr.toFixed(2)}`;
-         document.getElementById('atr').value = atr.toFixed(2);
-         calculate();
-         }
-         }
-		 
-         function formatNumber(value) {
-		  if (value === 0) return "0.00";
-		  if (value < 0.000001) return value.toExponential(2);
-		  if (value < 1) return value.toFixed(8);
-		  if (value < 100) return value.toFixed(6);
-		  return value.toFixed(2);
-		}
-		
-         function calculate() {
-           const deposit = parseFloat(document.getElementById("deposit").value);
-           const riskValue = parseFloat(document.getElementById("riskValue").value);
-           const CoinPrice = parseFloat(document.getElementById("CoinPrice").value);
-           const atr = parseFloat(document.getElementById("atr").value);
-           const resultDiv = document.getElementById("result");
-           const copyBtn = document.getElementById("copyBtn");
-           if ([deposit, riskValue, CoinPrice, atr].some(v => isNaN(v) || v <= 0)) {
-             resultDiv.innerHTML = "<span style='color:white; font-weight:bold;'>⚠️ Пожалуйста, заполните поля корректно!</span>";
-             copyBtn.style.display = "none";
-             return;
-           }
-           let stopMultiplier = currentATRPeriod === 14 ? 0.4 : 0.6;
-           let takeMultiplier = currentATRPeriod === 14 ? 0.8 : 1.2;
-           const stop = atr * stopMultiplier;
-		   if (stop < 0.01) {
-			  resultDiv.innerHTML = "<span style='color:white; font-weight:bold;'>⚠️ ATR слишком мал, позиция неадекватно большая</span>";
-			  copyBtn.style.display = "none";
-			  return;
-			}
-           const take = atr * takeMultiplier;
-           const riskAmount = currentRiskType === 'percent' ? deposit * (riskValue / 100) : riskValue;
-		   if (riskAmount > deposit) {
-			  resultDiv.innerHTML = "<span style='color:white; font-weight:bold;'>⚠️ Риск превышает депозит!</span>";
-			  copyBtn.style.display = "none";
-			  return;
-			}
-           const CoinSize = riskAmount / stop;
-           const positionSize = CoinSize * CoinPrice;
-           let stopLoss, takeProfit;
-           if (currentTradeType === 'long') {
-             stopLoss = CoinPrice - stop;
-             takeProfit = CoinPrice + take;
-           } else {
-             stopLoss = CoinPrice + stop;
-             takeProfit = CoinPrice - take;
-           }
-           const rrRatio = take / stop;
-           resultDiv.innerHTML = `
-         <strong>Риск:</strong> ${formatNumber(riskAmount)}<br>
-         <strong>Тип сделки:</strong> ${currentTradeType.toUpperCase()}<br>
-         <strong>Стоп (${stopMultiplier} ATR):</strong> ${stop.toFixed(2)}<br>
-         <strong>Тейк (${takeMultiplier} ATR):</strong> ${take.toFixed(2)}<br>
-         <strong>Размер позиции:</strong> ${formatNumber(CoinSize)}<br>
-         <strong>Объём позиции:</strong> ${formatNumber(positionSize)}<br>
-         <strong>Цена входа:</strong> ${CoinPrice.toFixed(2)}<br>
-         <strong>Стоп-лосс:</strong> ${stopLoss.toFixed(2)}<br>
-         <strong>Тейк-профит:</strong> ${takeProfit.toFixed(2)}<br>
-         <strong>Соотношение прибыль/риск:</strong> ${rrRatio.toFixed(1)} : 1`;
-           copyBtn.textContent = "Копировать в буфер";
-           copyBtn.classList.remove("glow");
-           copyBtn.style.display = "block";
-         }
-         function setATRPeriod(p) {
-		  currentATRPeriod = p;
-		  toggleActiveButtons(["btnATR14", "btnATR5"], `btnATR${p}`);
-		  document.getElementById("atrPeriodLabel").textContent = p;
-		  calculate();
-		}
-         
-         function copyResultToClipboard() {
-           const text = document.getElementById("result").innerText;
-           const btn = document.getElementById("copyBtn");
-           navigator.clipboard.writeText(text).then(() => {
-             btn.textContent = "Скопировано!";
-             btn.classList.add("glow");
-             setTimeout(() => {
-               btn.textContent = "Копировать в буфер";
-               btn.classList.remove("glow");
-             }, 2000);
-           });
-         }
-         
-         function setTradeType(type) {
-         currentTradeType = type;
-         toggleActiveButtons(["btnLong", "btnShort"], type === "long" ? "btnLong" : "btnShort");
-         const root = document.documentElement;
-         const isShort = type === "short";
-		root.style.setProperty("--accent", isShort ? "#ff5555" : "#00ffaa");
-		root.style.setProperty("--shadow-color", isShort ? "rgba(255, 85, 85, 0.3)" : "rgba(0, 255, 170, 0.3)");
-		root.style.setProperty("--copy-hover", isShort ? "#e14444" : "#00db8b");
-         calculate();
-         }
-         
-         window.addEventListener("DOMContentLoaded", () => {
-           setRiskType("percent");
-           setTradeType("long");
-         setATRPeriod(14);
-         });
-      </script>
-   </body>
+            <div class="result-container">
+                <div class="result-header">
+                    <button id="copyBtn" onclick="copyResultToClipboard()" title="Скопировать"></button>
+                </div>
+                <div class="result" id="result"></div>
+            </div>
+        </div>
+        <div id="atr-modal" class="modal" style="display: none;">
+            <div class="container">
+                <button class="close-btn" onclick="closeAtrModal()">×</button>
+                <h2 data-i18n="atrTitle">ATR КАЛЬКУЛЯТОР</h2>
+                <div id="atr-inputs"></div>
+                <button class="calc-btn" onclick="calculateATR()" data-i18n="atrCalc">Рассчитать</button>
+                <div id="atr-result" class="atr-result"></div>
+            </div>
+        </div>
+        <script>
+            let currentRiskType = "percent";
+            let currentTradeType = "long";
+            let currentATRPeriod = 14;
+            let currentLanguage = "ru";
+            let stopMultiplier = 0.4;
+            let takeMultiplier = 0.8;
+
+            function toggleLanguage() {
+                currentLanguage = currentLanguage === "ru" ? "en" : "ru";
+                window.langTexts = translations[currentLanguage];
+                updateTranslations();
+                calculate();
+
+                document.getElementById("ruLabel").classList.toggle("active", currentLanguage === "ru");
+                document.getElementById("enLabel").classList.toggle("active", currentLanguage === "en");
+            }
+
+            function updateTranslations() {
+                const elements = document.querySelectorAll("[data-i18n]");
+                elements.forEach((el) => {
+                    const key = el.getAttribute("data-i18n");
+                    const translation = translations[currentLanguage][key];
+                    if (translation) {
+                        el.textContent = translation;
+                    }
+                });
+            }
+            const translations = {
+                ru: {
+                    title: "РИСК КАЛЬКУЛЯТОР",
+                    atrTitle: "ATR КАЛЬКУЛЯТОР",
+                    deposit: "Депозит:",
+                    risk: "Риск на сделку:",
+                    coin: "Цена монеты:",
+                    bar: "Бар",
+                    high: "High",
+                    low: "Low",
+                    long: "ЛОНГ",
+                    short: "ШОРТ",
+                    fixed: "Фикс",
+                    atrCalc: "Рассчитать",
+                    calcBtn: "Рассчитать",
+                    warnings: {
+                        fill: "⚠️ Заполните поля корректно!",
+                        atr: "⚠️ ATR слишком мал, позиция неадекватно большая!",
+                        risk: "⚠️ Риск превышает депозит!",
+                        atrInput: "⚠️ Введите хотя бы одну пару значений High и Low!",
+                    },
+                    risk_label: "Риск:",
+                    trade_type_label: "Тип сделки:",
+                    stop_label: "Стоп ({X} ATR):",
+                    take_label: "Тейк ({X} ATR):",
+                    position_size_label: "Размер позиции:",
+                    position_volume_label: "Объём позиции:",
+                    entry_price_label: "Цена входа:",
+                    stop_loss_label: "Стоп-лосс:",
+                    take_profit_label: "Тейк-профит:",
+                    rr_ratio_label: "Соотношение прибыль/риск:",
+                },
+                en: {
+                    title: "RISK CALC",
+                    atrTitle: "ATR CALC",
+                    deposit: "Deposit:",
+                    risk: "Risk per trade:",
+                    coin: "Coin Price:",
+                    bar: "Bar",
+                    high: "High",
+                    low: "Low",
+                    long: "LONG",
+                    short: "SHORT",
+                    fixed: "Fixed",
+                    atrCalc: "Calculate",
+                    calcBtn: "Calculate",
+                    warnings: {
+                        fill: "⚠️ Fill in the fields correctly!",
+                        atr: "⚠️ ATR too small, position too large!",
+                        risk: "⚠️ Risk exceeds deposit!",
+                        atrInput: "⚠️ Enter at least one pair of High and Low values!",
+                    },
+                    risk_label: "Risk:",
+                    trade_type_label: "Trade Type:",
+                    stop_label: "Stop ({X} ATR):",
+                    take_label: "Take ({X} ATR):",
+                    position_size_label: "Position Size:",
+                    position_volume_label: "Position Volume:",
+                    entry_price_label: "Entry Price:",
+                    stop_loss_label: "Stop-Loss:",
+                    take_profit_label: "Take-Profit:",
+                    rr_ratio_label: "Reward/Risk Ratio:",
+                },
+            };
+
+            function setRiskType(type) {
+                currentRiskType = type;
+                toggleActiveButtons(["btnPercent", "btnFixed"], type === "percent" ? "btnPercent" : "btnFixed");
+                calculate();
+            }
+
+            function toggleActiveButtons(ids, active) {
+                ids.forEach((id) => document.getElementById(id).classList.toggle("active", id === active));
+            }
+            function openAtrModal() {
+                document.getElementById("atr-modal").style.display = "flex";
+
+                const atrInputs = document.getElementById("atr-inputs");
+                atrInputs.innerHTML = `
+	<table>
+	<thead><tr>
+		<th data-i18n="bar">Бар</th>
+		<th data-i18n="high">High</th>
+		<th data-i18n="low">Low</th>
+	</tr></thead>
+	<tbody>
+	${Array.from(
+        { length: currentATRPeriod },
+        (_, i) => `
+	<tr>
+		<td>${i + 1}</td>
+		<td><input type="number" min="0" step="0.01" id="high${i}"></td>
+		<td><input type="number" min="0" step="0.01" id="low${i}"></td>
+	</tr>
+	`
+    ).join("")}
+	</tbody>
+	</table>
+	`;
+                document.getElementById("atr-result").textContent = "";
+                updateTranslations();
+            }
+
+            function closeAtrModal() {
+                document.getElementById("atr-modal").style.display = "none";
+            }
+            document.getElementById("atr-modal").addEventListener("click", function (e) {
+                if (e.target === this) {
+                    closeAtrModal();
+                }
+            });
+
+            function calculateATR() {
+                let sum = 0,
+                    count = 0;
+                for (let i = 0; i < currentATRPeriod; i++) {
+                    const high = parseFloat(document.getElementById(`high${i}`).value);
+                    const low = parseFloat(document.getElementById(`low${i}`).value);
+                    if (!isNaN(high) && !isNaN(low)) {
+                        sum += high - low;
+                        count++;
+                    }
+                }
+                const resultElem = document.getElementById("atr-result");
+                if (count === 0) {
+                    resultElem.textContent = window.langTexts.warnings.atrInput;
+                } else {
+                    const atr = sum / count;
+                    const formattedATR = formatNumber(atr);
+                    resultElem.textContent = `ATR (${count}): ${formattedATR}`;
+                    document.getElementById("atr").value = formattedATR;
+                    calculate();
+                }
+            }
+
+            function formatNumber(value) {
+                if (value === 0) return "0";
+                let formatted;
+                if (value < 0.000001) {
+                    formatted = value.toExponential(2);
+                } else if (value < 1) {
+                    formatted = value.toFixed(8);
+                } else if (value < 100) {
+                    formatted = value.toFixed(6);
+                } else {
+                    formatted = value.toFixed(2);
+                }
+                return formatted.replace(/\.?0+$/, "");
+            }
+
+            function calculate() {
+                const deposit = parseFloat(document.getElementById("deposit").value);
+                const riskValue = parseFloat(document.getElementById("riskValue").value);
+                const CoinPrice = parseFloat(document.getElementById("CoinPrice").value);
+                const atr = parseFloat(document.getElementById("atr").value);
+                const resultDiv = document.getElementById("result");
+                const copyBtn = document.getElementById("copyBtn");
+                if ([deposit, riskValue, CoinPrice, atr].some((v) => isNaN(v) || v <= 0)) {
+                    resultDiv.innerHTML = `<span style='color:white; font-weight:bold;'>${window.langTexts.warnings.fill}</span>`;
+                    copyBtn.style.display = "none";
+                    return;
+                }
+                let stopMultiplier = currentATRPeriod === 14 ? 0.4 : 0.6;
+                let takeMultiplier = currentATRPeriod === 14 ? 0.8 : 1.2;
+                const stop = atr * stopMultiplier;
+                if (stop < 0.01) {
+                    resultDiv.innerHTML = `<span style='color:white; font-weight:bold;'>${window.langTexts.warnings.atr}</span>`;
+                    copyBtn.style.display = "none";
+                    return;
+                }
+                const take = atr * takeMultiplier;
+                const riskAmount = currentRiskType === "percent" ? deposit * (riskValue / 100) : riskValue;
+                if (riskAmount > deposit) {
+                    resultDiv.innerHTML = `<span style='color:white; font-weight:bold;'>${window.langTexts.warnings.risk}</span>`;
+                    copyBtn.style.display = "none";
+                    return;
+                }
+                const CoinSize = riskAmount / stop;
+                const positionSize = CoinSize * CoinPrice;
+                let stopLoss, takeProfit;
+                if (currentTradeType === "long") {
+                    stopLoss = CoinPrice - stop;
+                    takeProfit = CoinPrice + take;
+                } else {
+                    stopLoss = CoinPrice + stop;
+                    takeProfit = CoinPrice - take;
+                }
+                const rrRatio = take / stop;
+                const stopLabel = translations[currentLanguage].stop_label.replace("{X}", stopMultiplier);
+                const takeLabel = translations[currentLanguage].take_label.replace("{X}", takeMultiplier);
+                resultDiv.innerHTML = `
+		  <strong data-i18n="risk_label">Риск:</strong> ${formatNumber(riskAmount)}<br>
+		  <strong data-i18n="trade_type_label">Тип сделки:</strong> ${currentTradeType.toUpperCase()}<br>
+		  <strong>${stopLabel}</strong> ${formatNumber(stop)}<br>
+  <strong>${takeLabel}</strong> ${formatNumber(take)}<br>
+		  <strong data-i18n="position_size_label">Размер позиции:</strong> ${formatNumber(CoinSize)}<br>
+		  <strong data-i18n="position_volume_label">Объём позиции:</strong> ${formatNumber(positionSize)}<br>
+		  <strong data-i18n="entry_price_label">Цена входа:</strong> ${formatNumber(CoinPrice)}<br>
+		  <strong data-i18n="stop_loss_label">Стоп-лосс:</strong> ${formatNumber(stopLoss)}<br>
+		  <strong data-i18n="take_profit_label">Тейк-профит:</strong> ${formatNumber(takeProfit)}<br>
+		  <strong data-i18n="rr_ratio_label">Соотношение прибыль/риск:</strong> ${formatNumber(rrRatio)} : 1
+		`;
+                updateTranslations();
+                copyBtn.textContent = "⧉";
+                copyBtn.classList.remove("glow");
+                copyBtn.style.display = "block";
+            }
+            function setATRPeriod(p) {
+                currentATRPeriod = p;
+                stopMultiplier = p === 14 ? 0.4 : 0.6;
+                takeMultiplier = p === 14 ? 0.8 : 1.2;
+                toggleActiveButtons(["btnATR14", "btnATR5"], `btnATR${p}`);
+                document.getElementById("atrPeriodLabel").textContent = p;
+                calculate();
+            }
+
+            function copyResultToClipboard() {
+                const text = document.getElementById("result").innerText;
+                const btn = document.getElementById("copyBtn");
+                navigator.clipboard.writeText(text).then(() => {
+                    btn.textContent = "( ͡ᵔ ͜ʖ ͡ᵔ )";
+                    btn.classList.add("glow");
+                    setTimeout(() => {
+                        btn.textContent = "⧉";
+                        btn.classList.remove("glow");
+                    }, 800);
+                });
+            }
+
+            function setTradeType(type) {
+                currentTradeType = type;
+                toggleActiveButtons(["btnLong", "btnShort"], type === "long" ? "btnLong" : "btnShort");
+                const root = document.documentElement;
+                const isShort = type === "short";
+                root.style.setProperty("--accent", isShort ? "#ff5555" : "#00ffaa");
+                root.style.setProperty("--shadow-color", isShort ? "rgba(255, 85, 85, 0.3)" : "rgba(0, 255, 170, 0.3)");
+                root.style.setProperty("--copy-hover", isShort ? "#e14444" : "#00db8b");
+                calculate();
+
+                const accentColor = getComputedStyle(root).getPropertyValue("--accent").trim();
+                updateFavicon(accentColor);
+            }
+
+            function updateFavicon(accentColor = "#00ffaa") {
+                const svg = `
+				<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+					<path fill="${accentColor}" fill-rule="evenodd"
+					d="M16 32C7.163 32 0 24.837 0 16S7.163 0 16 0s16 7.163 16 16s-7.163 16-16 16m7.189-17.98c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84l-1.728-.43l-.69 2.765c-.454-.114-.92-.22-1.385-.326l.695-2.783L15.596 6l-.708 2.839q-.565-.127-1.104-.26l.002-.009l-2.384-.595l-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 3.235q.073.017.18.057l-.183-.045l-1.13 4.532c-.086.212-.303.531-.793.41c.018.025-1.256-.313-1.256-.313l-.858 1.978l2.25.561c.418.105.828.215 1.231.318l-.715 2.872l1.727.43l.708-2.84q.707.19 1.378.357l-.706 2.828l1.728.43l.715-2.866c2.948.558 5.164.333 6.097-2.333c.752-2.146-.037-3.385-1.588-4.192c1.13-.26 1.98-1.003 2.207-2.538m-3.95 5.538c-.533 2.147-4.148.986-5.32.695l.95-3.805c1.172.293 4.929.872 4.37 3.11m.535-5.569c-.487 1.953-3.495.96-4.47.717l.86-3.45c.975.243 4.118.696 3.61 2.733"/>
+				</svg>`;
+
+                const svgDataUrl = "data:image/svg+xml," + encodeURIComponent(svg);
+                let link = document.querySelector("link[rel~='icon']");
+                if (!link) {
+                    link = document.createElement("link");
+                    link.rel = "icon";
+                    document.head.appendChild(link);
+                }
+                link.href = svgDataUrl;
+            }
+
+            window.addEventListener("DOMContentLoaded", () => {
+                setRiskType("percent");
+                setTradeType("long");
+                setATRPeriod(14);
+
+                const accentColor = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+                updateFavicon(accentColor);
+            });
+            window.langTexts = translations[currentLanguage];
+            updateTranslations();
+        </script>
+    </body>
 </html>
