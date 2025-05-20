@@ -398,6 +398,11 @@
          function closeAtrModal() {
          document.getElementById('atr-modal').style.display = 'none';
          }
+         document.getElementById('atr-modal').addEventListener('click', function(e) {
+			if (e.target === this) {
+			  closeAtrModal();
+			}
+		  });
          
          function calculateATR() {
          let sum = 0, count = 0;
