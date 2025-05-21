@@ -50,6 +50,14 @@
                     font-size: 0.95rem;
                 }
             }
+			input[type="number"]::-webkit-inner-spin-button,
+			input[type="number"]::-webkit-outer-spin-button {
+				-webkit-appearance: none;
+				margin: 0;
+			}
+			input[type="number"] {
+				-moz-appearance: textfield;
+			}
             .lang-toggle {
                 position: absolute;
                 top: 1rem;
@@ -250,7 +258,6 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                 transform: scaleX(-1);
                 transform-origin: center;
             }
-
             .atr-button {
                 background: var(--accent);
                 color: #000;
@@ -389,7 +396,7 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
             <input type="number" id="CoinPrice" value="60000" min="0" step="any" oninput="calculate()" />
             <label for="atr">
                 ATR (<span id="atrPeriodLabel">14</span>):
-                <a href="#" class="atr-button" onclick="event.preventDefault(); openAtrModal();" data-i18n="atrCalc">Рассчитать</a>
+                <a href="#" class="atr-button" onclick="event.preventDefault(); openAtrModal();" data-i18n="atrCalc" title="ATR КАЛЬКУЛЯТОР">Рассчитать</a>
             </label>
             <div class="risk-row">
                 <input type="number" id="atr" value="1200" min="0" step="any" oninput="calculate()" />
@@ -400,7 +407,7 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
             </div>
             <div class="result-container">
                 <div class="result-header">
-                    <button id="copyBtn" onclick="copyResultToClipboard()" title="Скопировать"></button>
+                    <button id="copyBtn" onclick="copyResultToClipboard()" title="Скопировать в буфер"></button>
                 </div>
                 <div class="result" id="result"></div>
             </div>
