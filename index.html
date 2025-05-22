@@ -11,6 +11,7 @@
                 --shadow-color: rgba(0, 255, 170, 0.3);
                 --copy-hover: #00db8b;
             }
+		
             body {
                 margin: 0;
                 font-family: "Segoe UI", sans-serif;
@@ -23,6 +24,7 @@
                 padding: 1rem;
                 overflow-y: auto;
             }
+		
             .container {
                 position: relative;
                 background: #1e1e1e;
@@ -34,30 +36,61 @@
                 max-width: 600px;
                 font-size: 1rem;
             }
+		
             @media (max-width: 480px) {
                 .container {
-                    padding: 1rem;
-                    font-size: 0.95rem;
+                    padding: 0.8rem;
+                    font-size: 0.9rem;
                 }
                 input,
                 .risk-toggle button,
                 .deal-toggle button,
                 #copyBtn {
-                    font-size: 0.95rem;
-                    padding: 10px;
+                    font-size: 0.9rem;
+                    padding: 8px;
                 }
                 .result {
+                    font-size: 0.9rem;
+                }
+                .trade-toggle button,
+                .risk-toggle button,
+                .deal-toggle button {
+                    padding: 8px 10px;
+                    font-size: 0.9rem;
+                }
+                #atr-modal .container {
+                    padding: 0.8rem 1rem;
+                }
+                #atr-modal input {
+                    font-size: 0.95rem;
+                    padding: 4px 5px;
+                }
+                #atr-modal .calc-btn {
+                    font-size: 0.95rem;
+                    padding: 7px;
+                }
+                #atr-modal .atr-result {
                     font-size: 0.95rem;
                 }
+                .lang-toggle {
+                    padding: 0.1rem 0.4rem;
+                    font-size: 0.85rem;
+                }
+                .close-btn {
+                    font-size: 1.6rem;
+                    top: 8px;
+                    right: 10px;
+                }
             }
-			input[type="number"]::-webkit-inner-spin-button,
-			input[type="number"]::-webkit-outer-spin-button {
-				-webkit-appearance: none;
-				margin: 0;
-			}
-			input[type="number"] {
-				-moz-appearance: textfield;
-			}
+            input[type="number"]::-webkit-inner-spin-button,
+            input[type="number"]::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            input[type="number"] {
+                -moz-appearance: textfield;
+            }
+		
             .lang-toggle {
                 position: absolute;
                 top: 1rem;
@@ -77,12 +110,14 @@
             .lang-toggle .active {
                 color: var(--accent);
             }
+		
             h2 {
                 margin-top: 0rem;
                 text-align: center;
                 margin-bottom: 0.8rem;
                 color: var(--accent);
             }
+		
             .trade-toggle {
                 display: flex;
                 justify-content: center;
@@ -103,11 +138,13 @@
                 color: #000;
                 border-radius: 8px;
             }
+		
             label {
                 display: block;
                 margin-top: 0.5rem;
                 font-weight: bold;
             }
+		
             input {
                 margin-top: 0.2rem;
                 padding: 10px;
@@ -124,6 +161,7 @@
                 box-shadow: 0 0 5px var(--accent);
                 border: 1px solid var(--accent);
             }
+		
             .result {
                 margin-top: 1rem;
                 background: #2a2a2a;
@@ -145,6 +183,7 @@
                 top: 8px;
                 right: 8px;
             }
+		
             #copyBtn {
                 background: none;
                 border: none;
@@ -160,6 +199,7 @@
             #copyBtn.glow {
                 animation: glowPulse 1s infinite alternate;
             }
+		
             @keyframes glowPulse {
                 from {
                     text-shadow: 0 0 5px var(--accent, #00ffaa);
@@ -168,6 +208,7 @@
                     text-shadow: 0 0 15px var(--accent, #00ffaa);
                 }
             }
+		
             .risk-row {
                 display: flex;
                 align-items: center;
@@ -220,22 +261,18 @@
                 position: relative;
                 z-index: 1;
             }
-
             .deal-toggle button:first-child {
                 text-align: right;
                 padding-left: 14px;
             }
-
             .deal-toggle button:last-child {
                 text-align: left;
                 padding-right: 14px;
             }
-
             .deal-toggle button.active {
                 background: var(--accent);
                 color: #000;
             }
-
             .deal-toggle button.active::before {
                 content: "";
                 position: absolute;
@@ -258,6 +295,7 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                 transform: scaleX(-1);
                 transform-origin: center;
             }
+
             .atr-button {
                 background: var(--accent);
                 color: #000;
@@ -356,6 +394,7 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                 text-align: center;
                 font-weight: bold;
             }
+
             .close-btn {
                 position: absolute;
                 top: 10px;
@@ -377,7 +416,9 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
     <body>
         <div class="container">
             <div class="lang-toggle" onclick="toggleLanguage()"><span id="ruLabel" class="active">RU</span> | <span id="enLabel">EN</span></div>
-            <h2 data-i18n="title">РИСК КАЛЬКУЛЯТОР</h2>
+            <a href="https://t.me/pAIthon_ChatBot?start=1" style="text-decoration: none; color: inherit;">
+                <h2 data-i18n="title">РИСК КАЛЬКУЛЯТОР</h2>
+            </a>
             <div class="deal-toggle">
                 <button id="btnLong" onclick="setTradeType('long')" data-i18n="long">ЛОНГ</button>
                 <button id="btnShort" onclick="setTradeType('short')" data-i18n="short">ШОРТ</button>
@@ -396,7 +437,7 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
             <input type="number" id="CoinPrice" value="60000" min="0" step="any" oninput="calculate()" />
             <label for="atr">
                 ATR (<span id="atrPeriodLabel">14</span>):
-                <a href="#" class="atr-button" onclick="event.preventDefault(); openAtrModal();" data-i18n="atrCalc" title="ATR КАЛЬКУЛЯТОР">Рассчитать</a>
+                <a href="#" class="atr-button" onclick="event.preventDefault(); openAtrModal();" data-i18n="atrCalc" title="ATR КАЛЬКУЛЯТОР" data-i18n-title="atrTitle">Рассчитать</a>
             </label>
             <div class="risk-row">
                 <input type="number" id="atr" value="1200" min="0" step="any" oninput="calculate()" />
@@ -407,7 +448,7 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
             </div>
             <div class="result-container">
                 <div class="result-header">
-                    <button id="copyBtn" onclick="copyResultToClipboard()" title="Скопировать в буфер"></button>
+                    <button id="copyBtn" onclick="copyResultToClipboard()" title="Скопировать в буфер" data-i18n-title="copy_title"></button>
                 </div>
                 <div class="result" id="result"></div>
             </div>
@@ -448,6 +489,15 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                         el.textContent = translation;
                     }
                 });
+
+                const titledElements = document.querySelectorAll("[data-i18n-title]");
+                titledElements.forEach((el) => {
+                    const key = el.getAttribute("data-i18n-title");
+                    const translation = translations[currentLanguage][key];
+                    if (translation) {
+                        el.title = translation;
+                    }
+                });
             }
             const translations = {
                 ru: {
@@ -464,12 +514,6 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                     fixed: "Фикс",
                     atrCalc: "Рассчитать",
                     calcBtn: "Рассчитать",
-                    warnings: {
-                        fill: "⚠️ Заполните поля корректно!",
-                        atr: "⚠️ ATR слишком мал, позиция неадекватно большая!",
-                        risk: "⚠️ Риск превышает депозит!",
-                        atrInput: "⚠️ Введите хотя бы одну пару значений High и Low!",
-                    },
                     risk_label: "Риск:",
                     trade_type_label: "Тип сделки:",
                     stop_label: "Стоп ({X} ATR):",
@@ -480,6 +524,13 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                     stop_loss_label: "Стоп-лосс:",
                     take_profit_label: "Тейк-профит:",
                     rr_ratio_label: "Соотношение прибыль/риск:",
+                    copy_title: "Скопировать в буфер",
+                    warnings: {
+                        fill: "⚠️ Заполните поля корректно!",
+                        atr: "⚠️ ATR слишком мал, позиция неадекватно большая!",
+                        risk: "⚠️ Риск превышает депозит!",
+                        atrInput: "⚠️ Введите хотя бы одну пару значений High и Low!",
+                    },
                 },
                 en: {
                     title: "RISK CALC",
@@ -495,12 +546,6 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                     fixed: "Fixed",
                     atrCalc: "Calculate",
                     calcBtn: "Calculate",
-                    warnings: {
-                        fill: "⚠️ Fill in the fields correctly!",
-                        atr: "⚠️ ATR too small, position too large!",
-                        risk: "⚠️ Risk exceeds deposit!",
-                        atrInput: "⚠️ Enter at least one pair of High and Low values!",
-                    },
                     risk_label: "Risk:",
                     trade_type_label: "Trade Type:",
                     stop_label: "Stop ({X} ATR):",
@@ -511,6 +556,13 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                     stop_loss_label: "Stop-Loss:",
                     take_profit_label: "Take-Profit:",
                     rr_ratio_label: "Reward/Risk Ratio:",
+                    copy_title: "Copy to clipboard",
+                    warnings: {
+                        fill: "⚠️ Fill in the fields correctly!",
+                        atr: "⚠️ ATR too small, position too large!",
+                        risk: "⚠️ Risk exceeds deposit!",
+                        atrInput: "⚠️ Enter at least one pair of High and Low values!",
+                    },
                 },
             };
 
@@ -543,8 +595,7 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
 		<td><input type="number" min="0" step="0.01" id="high${i}"></td>
 		<td><input type="number" min="0" step="0.01" id="low${i}"></td>
 	</tr>
-	`
-    ).join("")}
+	`).join("")}
 	</tbody>
 	</table>
 	`;
@@ -643,7 +694,7 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
 		  <strong data-i18n="risk_label">Риск:</strong> ${formatNumber(riskAmount)}<br>
 		  <strong data-i18n="trade_type_label">Тип сделки:</strong> ${currentTradeType.toUpperCase()}<br>
 		  <strong>${stopLabel}</strong> ${formatNumber(stop)}<br>
-  <strong>${takeLabel}</strong> ${formatNumber(take)}<br>
+		  <strong>${takeLabel}</strong> ${formatNumber(take)}<br>
 		  <strong data-i18n="position_size_label">Размер позиции:</strong> ${formatNumber(CoinSize)}<br>
 		  <strong data-i18n="position_volume_label">Объём позиции:</strong> ${formatNumber(positionSize)}<br>
 		  <strong data-i18n="entry_price_label">Цена входа:</strong> ${formatNumber(CoinPrice)}<br>
@@ -656,6 +707,7 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                 copyBtn.classList.remove("glow");
                 copyBtn.style.display = "block";
             }
+		
             function setATRPeriod(p) {
                 currentATRPeriod = p;
                 stopMultiplier = p === 14 ? 0.4 : 0.6;
@@ -696,7 +748,13 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                 const svg = `
 				<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
 					<path fill="${accentColor}" fill-rule="evenodd"
-					d="M16 32C7.163 32 0 24.837 0 16S7.163 0 16 0s16 7.163 16 16s-7.163 16-16 16m7.189-17.98c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84l-1.728-.43l-.69 2.765c-.454-.114-.92-.22-1.385-.326l.695-2.783L15.596 6l-.708 2.839q-.565-.127-1.104-.26l.002-.009l-2.384-.595l-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 3.235q.073.017.18.057l-.183-.045l-1.13 4.532c-.086.212-.303.531-.793.41c.018.025-1.256-.313-1.256-.313l-.858 1.978l2.25.561c.418.105.828.215 1.231.318l-.715 2.872l1.727.43l.708-2.84q.707.19 1.378.357l-.706 2.828l1.728.43l.715-2.866c2.948.558 5.164.333 6.097-2.333c.752-2.146-.037-3.385-1.588-4.192c1.13-.26 1.98-1.003 2.207-2.538m-3.95 5.538c-.533 2.147-4.148.986-5.32.695l.95-3.805c1.172.293 4.929.872 4.37 3.11m.535-5.569c-.487 1.953-3.495.96-4.47.717l.86-3.45c.975.243 4.118.696 3.61 2.733"/>
+					d="M16 32C7.163 32 0 24.837 0 16S7.163 0 16 0s16 7.163 16 16s-7.163 16-16 
+				16m7.189-17.98c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84l-1.728-.43l-.69 2.765c-.454-.114-.92-.22-1.385-.326l.695-2.783L15.596 
+				6l-.708 2.839q-.565-.127-1.104-.26l.002-.009l-2.384-.595l-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 
+				3.235q.073.017.18.057l-.183-.045l-1.13 4.532c-.086.212-.303.531-.793.41c.018.025-1.256-.313-1.256-.313l-.858 1.978l2.25.561c.418.105.828.215
+				1.231.318l-.715 2.872l1.727.43l.708-2.84q.707.19 1.378.357l-.706 2.828l1.728.43l.715-2.866c2.948.558 5.164.333 
+				6.097-2.333c.752-2.146-.037-3.385-1.588-4.192c1.13-.26 1.98-1.003 2.207-2.538m-3.95 5.538c-.533 2.147-4.148.986-5.32.695l.95-3.805c1.172.293
+				4.929.872 4.37 3.11m.535-5.569c-.487 1.953-3.495.96-4.47.717l.86-3.45c.975.243 4.118.696 3.61 2.733"/>
 				</svg>`;
 
                 const svgDataUrl = "data:image/svg+xml," + encodeURIComponent(svg);
@@ -713,7 +771,6 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                 setRiskType("percent");
                 setTradeType("long");
                 setATRPeriod(14);
-
                 const accentColor = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
                 updateFavicon(accentColor);
             });
