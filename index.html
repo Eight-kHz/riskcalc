@@ -435,7 +435,7 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                     <button id="btnFixed" onclick="setRiskType('fixed')" data-i18n="fixed">Фикс</button>
                 </div>
             </div>
-            <label for="CoinPrice" data-i18n="coin">Цена монеты:</label>
+            <label for="CoinPrice" data-i18n="coin">Цена входа:</label>
             <input type="number" id="CoinPrice" value="60000" min="0" step="any" oninput="calculate()" />
             <label for="atr">
                 ATR (<span id="atrPeriodLabel">14</span>):
@@ -506,7 +506,7 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                     atrTitle: "ATR КАЛЬКУЛЯТОР",
                     deposit: "Депозит:",
                     risk: "Риск на сделку:",
-                    coin: "Цена монеты:",
+                    coin: "Цена входа:",
                     bar: "Бар",
                     high: "High",
                     low: "Low",
@@ -521,10 +521,9 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                     take_label: "Тейк ({X} ATR):",
                     position_size_label: "Размер позиции:",
                     position_volume_label: "Объём позиции:",
-                    entry_price_label: "Цена входа:",
                     stop_loss_label: "Стоп-лосс:",
                     take_profit_label: "Тейк-профит:",
-                    rr_ratio_label: "Соотношение прибыль/риск:",
+                    rr_ratio_label: "Прибыль/риск:",
                     copy_title: "Скопировать в буфер",
                     warnings: {
                         fill: "⚠️ Заполните поля корректно!",
@@ -538,7 +537,7 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                     atrTitle: "ATR CALC",
                     deposit: "Deposit:",
                     risk: "Risk per trade:",
-                    coin: "Coin Price:",
+                    coin: "Entry price:",
                     bar: "Bar",
                     high: "High",
                     low: "Low",
@@ -553,10 +552,9 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                     take_label: "Take ({X} ATR):",
                     position_size_label: "Position Size:",
                     position_volume_label: "Position Volume:",
-                    entry_price_label: "Entry Price:",
                     stop_loss_label: "Stop-Loss:",
                     take_profit_label: "Take-Profit:",
-                    rr_ratio_label: "Reward/Risk Ratio:",
+                    rr_ratio_label: "Reward/Risk:",
                     copy_title: "Copy to clipboard",
                     warnings: {
                         fill: "⚠️ Fill in the fields correctly!",
@@ -692,16 +690,15 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                 const stopLabel = translations[currentLanguage].stop_label.replace("{X}", stopMultiplier);
                 const takeLabel = translations[currentLanguage].take_label.replace("{X}", takeMultiplier);
                 resultDiv.innerHTML = `
-		  <strong data-i18n="risk_label">Риск:</strong> ${formatNumber(riskAmount)}<br>
 		  <strong data-i18n="trade_type_label">Тип сделки:</strong> ${currentTradeType.toUpperCase()}<br>
+		  <strong data-i18n="risk_label">Риск:</strong> ${formatNumber(riskAmount)}<br>
+		  <strong data-i18n="stop_loss_label">Стоп-лосс:</strong> ${formatNumber(stopLoss)}<br>
+		  <strong data-i18n="take_profit_label">Тейк-профит:</strong> ${formatNumber(takeProfit)}<br>
 		  <strong>${stopLabel}</strong> ${formatNumber(stop)}<br>
 		  <strong>${takeLabel}</strong> ${formatNumber(take)}<br>
 		  <strong data-i18n="position_size_label">Размер позиции:</strong> ${formatNumber(CoinSize)}<br>
 		  <strong data-i18n="position_volume_label">Объём позиции:</strong> ${formatNumber(positionSize)}<br>
-		  <strong data-i18n="entry_price_label">Цена входа:</strong> ${formatNumber(CoinPrice)}<br>
-		  <strong data-i18n="stop_loss_label">Стоп-лосс:</strong> ${formatNumber(stopLoss)}<br>
-		  <strong data-i18n="take_profit_label">Тейк-профит:</strong> ${formatNumber(takeProfit)}<br>
-		  <strong data-i18n="rr_ratio_label">Соотношение прибыль/риск:</strong> ${formatNumber(rrRatio)} : 1
+		  <strong data-i18n="rr_ratio_label">Прибыль/риск:</strong> ${formatNumber(rrRatio)} : 1
 		`;
                 updateTranslations();
                 copyBtn.textContent = "⧉";
