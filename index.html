@@ -93,10 +93,11 @@
 		
             .lang-toggle {
                 position: absolute;
+                color: var(--accent);
                 top: 1rem;
                 right: 1rem;
                 background: #161b22;
-                border: 1px solid #30363d;
+                border: 1px solid var(--accent);;
                 border-radius: 20px;
                 padding: 0.1rem 0.5rem;
                 display: flex;
@@ -415,7 +416,7 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
     </head>
     <body>
         <div class="container">
-            <div class="lang-toggle" onclick="toggleLanguage()"><span id="ruLabel" class="active">RU</span> | <span id="enLabel">EN</span></div>
+            <div class="lang-toggle" onclick="toggleLanguage()" id="langToggle">RU</div>
             <a href="https://t.me/pAIthon_ChatBot?start=1" style="text-decoration: none; color: inherit;">
                 <h2 data-i18n="title">РИСК КАЛЬКУЛЯТОР</h2>
             </a>
@@ -476,8 +477,7 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                 updateTranslations();
                 calculate();
 
-                document.getElementById("ruLabel").classList.toggle("active", currentLanguage === "ru");
-                document.getElementById("enLabel").classList.toggle("active", currentLanguage === "en");
+                document.getElementById("langToggle").textContent = currentLanguage.toUpperCase();
             }
 
             function updateTranslations() {
