@@ -708,7 +708,7 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                 copyBtn.classList.remove("glow");
                 copyBtn.style.display = "block";
                 window.data_to_tg = {
-		    deposit: deposit,
+		    dep: deposit,
 		    risk: riskValue,
 		    coin: formatNumber(CoinPrice),
 		    atr: atr,
@@ -721,10 +721,10 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
 		    take: formatNumber(take),
 		    riskAmount: formatNumber(riskAmount),
 		    coinSize: formatNumber(CoinSize),
-		    position: formatNumber(positionSize),
-		    stopLoss: formatNumber(stopLoss),
-		    takeProfit: formatNumber(takeProfit),
-		    rrRatio: formatNumber(rrRatio),
+		    pos: formatNumber(positionSize),
+		    loss: formatNumber(stopLoss),
+		    profit: formatNumber(takeProfit),
+		    ratio: formatNumber(rrRatio),
 		    language: currentLanguage
 		};
             }
