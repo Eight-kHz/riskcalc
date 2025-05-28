@@ -707,6 +707,24 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                 copyBtn.textContent = "⧉";
                 copyBtn.classList.remove("glow");
                 copyBtn.style.display = "block";
+                window.data_to_tg = {
+		    deposit: deposit,
+		    riskValue: riskValue,
+		    coinPrice: CoinPrice,
+		    atr: atr,
+		    atrPeriod: currentATRPeriod,
+		    tradeType: currentTradeType,
+		    riskType: currentRiskType,
+		    stop: stop,
+		    take: take,
+		    riskAmount: riskAmount,
+		    coinSize: CoinSize,
+		    positionSize: positionSize,
+		    stopLoss: stopLoss,
+		    takeProfit: takeProfit,
+		    rrRatio: rrRatio,
+		    language: currentLanguage
+		};
             }
 		
             function setATRPeriod(p) {
