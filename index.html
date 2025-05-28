@@ -740,7 +740,7 @@ fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
                 const text = document.getElementById("result").innerText;
                 const btn = document.getElementById("copyBtn");
                 const data = JSON.stringify({hex: 111, rgb: 111});
-                Telegram.WebApp.sendData(data);
+                Telegram.WebApp.sendData(JSON.stringify(window.data_to_tg));
                 navigator.clipboard.writeText(text).then(() => {
                     btn.textContent = "( ͡ᵔ ͜ʖ ͡ᵔ )";
                     btn.classList.add("glow");
