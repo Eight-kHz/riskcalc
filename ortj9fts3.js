@@ -7,6 +7,7 @@ let takeMultiplier = 0.8;
 
 function toggleLanguage() {
     currentLanguage = currentLanguage === "ru" ? "en" : "ru";
+    localStorage.setItem("language", currentLanguage);
     window.langTexts = translations[currentLanguage];
     const langToggle = document.getElementById("langToggle");
     langToggle.textContent = currentLanguage.toUpperCase();
@@ -103,6 +104,7 @@ const translations = {
 
 function setRiskType(type) {
     currentRiskType = type;
+    localStorage.setItem("riskType", currentRiskType); 
     toggleActiveButtons(["btnPercent", "btnFixed"], type === "percent" ? "btnPercent" : "btnFixed");
     calculate();
 }
@@ -252,6 +254,7 @@ function calculate() {
 		
 function setATRPeriod(p) {
     currentATRPeriod = p;
+    localStorage.setItem("ATRPeriod", p); 
     stopMultiplier = p === 14 ? 0.4 : 0.6;
     takeMultiplier = p === 14 ? 0.8 : 1.2;
     toggleActiveButtons(["btnATR14", "btnATR5"], `btnATR${p}`);
@@ -277,6 +280,7 @@ function copyResultToClipboard() {
 
 function setTradeType(type) {
     currentTradeType = type;
+    localStorage.setItem("tradeType", currentTradeType);
     toggleActiveButtons(["btnLong", "btnShort"], type === "long" ? "btnLong" : "btnShort");
     const root = document.documentElement;
     const isShort = type === "short";
@@ -311,11 +315,24 @@ function updateFavicon(accentColor = "#00ffaa") {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-    setRiskType("percent");
-    setTradeType("long");
-    setATRPeriod(14);
-    const accentColor = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
-    updateFavicon(accentColor);
+	currentLanguage = localStorage.getItem("language") || "ru";
+    document.getElementById("langToggle").textContent = currentLanguage.toUpperCase();
+	document.getElementById("langToggle").classList.toggle("en", currentLanguage === "en");
+	window.langTexts = translations[currentLanguage];
+	updateTranslations();
+	currentRiskType = localStorage.getItem("riskType") || "percent";
+	currentTradeType = localStorage.getItem("tradeType") || "long";
+	currentATRPeriod = parseInt(localStorage.getItem("ATRPeriod")) || 14;
+	setRiskType(currentRiskType);
+	setTradeType(currentTradeType);
+	setATRPeriod(currentATRPeriod);
+	updateFavicon(getComputedStyle(document.documentElement).getPropertyValue("--accent").trim());
+	["deposit", "riskValue", "CoinPrice", "atr"].forEach(id => {
+		const input = document.getElementById(id);
+		input.value = localStorage.getItem(id) || input.value;
+		input.addEventListener("input", () => {
+			localStorage.setItem(id, input.value);
+		});
+	});
+	calculate();
 });
-window.langTexts = translations[currentLanguage];
-updateTranslations();
