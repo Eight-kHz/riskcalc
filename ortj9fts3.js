@@ -35,6 +35,7 @@ const translations = {
 	atr: "⚠️ ATR слишком мал, позиция неадекватно большая!",
 	risk: "⚠️ Риск превышает депозит!",
 	atrInput: "⚠️ Введите хотя бы одну пару значений High и Low!",
+	highLow: "⚠️ Значение Low не может быть больше High!"
         },
     },
     en: {
@@ -66,6 +67,7 @@ const translations = {
 	atr: "⚠️ ATR too small, position too large!",
 	risk: "⚠️ Risk exceeds deposit!",
 	atrInput: "⚠️ Enter at least one pair of High and Low values!",
+	highLow: "⚠️ Low cannot be greater than High!"
         },
     },
 };
@@ -226,20 +228,33 @@ function openAtrModal() {
 	}
     document.getElementById("atr-result").textContent = "";
     updateTranslations();
+    setTimeout(() => {
+        const firstInput = document.getElementById("high0");
+        if (firstInput) firstInput.focus();
+    }, 0);
 }
 
 function calculateATR() {
     let sum = 0,
-        count = 0;
+        count = 0,
+        invalidPair = false;
     for (let i = 0; i < currentATRPeriod; i++) {
         const high = parseFloat(document.getElementById(`high${i}`).value);
         const low = parseFloat(document.getElementById(`low${i}`).value);
         if (!isNaN(high) && !isNaN(low)) {
-	sum += high - low;
-	count++;
+            if (low > high) {
+                invalidPair = true;
+                break;
+            }
+            sum += high - low;
+            count++;
         }
     }
     const resultElem = document.getElementById("atr-result");
+    if (invalidPair) {
+        resultElem.textContent = window.langTexts.warnings.highLow;
+        return;
+	}
     if (count === 0) {
         resultElem.textContent = window.langTexts.warnings.atrInput;
     } else {
@@ -247,7 +262,7 @@ function calculateATR() {
         const formattedATR = formatNumber(atr);
         resultElem.textContent = `ATR (${count}): ${formattedATR}`;
         document.getElementById("atr").value = formattedATR;
-        localStorage.setItem("atr", formattedATR); 
+        localStorage.setItem("atr", formattedATR);
         calculate();
     }
 }
