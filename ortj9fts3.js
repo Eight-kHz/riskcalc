@@ -8,6 +8,9 @@ let takeMultiplier = 0.8;
 function toggleLanguage() {
     currentLanguage = currentLanguage === "ru" ? "en" : "ru";
     window.langTexts = translations[currentLanguage];
+    const langToggle = document.getElementById("langToggle");
+    langToggle.textContent = currentLanguage.toUpperCase();
+    langToggle.classList.toggle("en", currentLanguage === "en");
     updateTranslations();
     calculate();
     document.getElementById("langToggle").textContent = currentLanguage.toUpperCase();
