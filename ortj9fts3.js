@@ -124,6 +124,24 @@ function openAtrModal() {
 	<td><input type="number" min="0" step="0.01" id="high${i}"></td>
 	<td><input type="number" min="0" step="0.01" id="low${i}"></td>
 	</tr>`).join("")}</tbody></table>`;
+    for (let i = 0; i < currentATRPeriod; i++) {
+        const highKey = `atr_high_${i}`;
+        const lowKey = `atr_low_${i}`;
+        const highEl = document.getElementById(`high${i}`);
+        const lowEl = document.getElementById(`low${i}`);
+        if (sessionStorage.getItem(highKey)) {
+            highEl.value = sessionStorage.getItem(highKey);
+        }
+        if (sessionStorage.getItem(lowKey)) {
+            lowEl.value = sessionStorage.getItem(lowKey);
+        }
+            highEl.addEventListener("input", () => {
+            sessionStorage.setItem(highKey, highEl.value);
+        });
+        lowEl.addEventListener("input", () => {
+            sessionStorage.setItem(lowKey, lowEl.value);
+        });
+	}
     document.getElementById("atr-result").textContent = "";
     updateTranslations();
 }
@@ -157,6 +175,7 @@ function calculateATR() {
         const formattedATR = formatNumber(atr);
         resultElem.textContent = `ATR (${count}): ${formattedATR}`;
         document.getElementById("atr").value = formattedATR;
+        localStorage.setItem("atr", formattedATR); 
         calculate();
     }
 }
