@@ -101,12 +101,41 @@ input[type="number"] {
 	right: 1rem;
 	background: #161b22;
 	border: 1px solid var(--accent);
-	;
 	border-radius: 20px;
-	padding: 0.1rem 0.5rem;
+	padding: 0.2rem 0.5rem;
 	display: flex;
 	align-items: center;
 	cursor: pointer;
+	font-weight: bold;
+	font-size: 0.9rem;
+	overflow: hidden;
+}
+
+.lang-toggle::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'\
+		width='302' height='302' viewBox='0 0 36 36'><path fill='%23ce2028'\
+		d='M36 27a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4v-4h36z' stroke-width='1' stroke='%23ce2028'/>\
+		<path fill='%2322408c' d='M0 13h36v10H0z' stroke-width='1' stroke='%2322408c'/>\
+		<path fill='%23eee' d='M32 5H4a4 4 0 0 0-4 4v4h36V9a4 4 0 0 0-4-4' stroke-width='1' stroke='%23eee'/></svg>");
+	background-size: cover;
+	background-position: center;
+	opacity: 0.2;
+	z-index: 0;
+	pointer-events: none;
+}
+
+.lang-toggle.en::before {
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'\
+		width='301' height='151' viewBox='0 0 301 151'><g fill='none'><path fill='%23fff'\
+		d='M.5.5h299.843v149.983H.5z'/><path fill='%23cf142b' d='M135.428\
+		90.444v60.039h29.988V90.444h134.928V60.46H165.416V.5h-29.988v59.96H.5v29.984z'/><path fill='%2300247d'\
+		d='M175.415 49.049V.5h97.08zm0 52.884v48.55h97.08zm-49.987 0v48.55H28.349zm0-52.884V.5H28.349zM.501\
+		14.442v36.051h72.087zm299.842 0v36.051h-72.087zm0 122.099V100.49h-72.087zm-299.842 0V100.49h72.087z'/>\
+		<path fill='%23cf142b' d='M300.343.5h-16.654L183.9 50.493h16.654L300.5.5m-183.557 99.987h-16.654L.5\
+		150.48h16.654l99.946-49.993M83.768 50.532h16.653L.5.5v8.385zm133.255 49.936h-16.654L300.29 150.5v-8.385z'/></g></svg>");
 }
 
 .lang-toggle span {
@@ -216,13 +245,8 @@ input:focus {
 }
 
 @keyframes glowPulse {
-	from {
-		text-shadow: 0 0 5px var(--accent, #00ffaa);
-	}
-
-	to {
-		text-shadow: 0 0 15px var(--accent, #00ffaa);
-	}
+	from {text-shadow: 0 0 5px var(--accent, #00ffaa);}
+	to {text-shadow: 0 0 15px var(--accent, #00ffaa);}
 }
 
 .risk-row {
@@ -307,9 +331,9 @@ input:focus {
 	bottom: 0;
 	z-index: 0;
 	background-image: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'>\
-<polyline points='0,100 3,88 7,94 10,70 14,92 17,66 21,85 26,61 30,83 34,58 38,75 43,51 47,79 51,42 56,72 60,38 64,68 69,28 73,63 77,34 82,58 86,26 91,52 95,18 100,0' \
-fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
+	<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'>\
+	<polyline points='0,100 3,88 7,94 10,70 14,92 17,66 21,85 26,61 30,83 34,58 38,75 43,51 47,79 51,42 56,72 60,38 64,68 69,28 73,63 77,34 82,58 86,26 91,52 95,18 100,0' \
+	fill='none' stroke='black' stroke-width='1.2' stroke-linejoin='bevel'/></svg>");
 	background-size: 100% 100%;
 	background-position: 0 0;
 	background-repeat: no-repeat;
