@@ -388,4 +388,5 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     });
     calculate();
+    document.getElementById("deposit").focus();
 });
