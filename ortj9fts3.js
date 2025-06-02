@@ -5,38 +5,6 @@ let currentLanguage = "ru";
 let stopMultiplier = 0.4;
 let takeMultiplier = 0.8;
 
-function toggleLanguage() {
-    currentLanguage = currentLanguage === "ru" ? "en" : "ru";
-    localStorage.setItem("language", currentLanguage);
-    window.langTexts = translations[currentLanguage];
-    const langToggle = document.getElementById("langToggle");
-    langToggle.textContent = currentLanguage.toUpperCase();
-    langToggle.classList.toggle("en", currentLanguage === "en");
-    updateTranslations();
-    calculate();
-    document.getElementById("langToggle").textContent = currentLanguage.toUpperCase();
-}
-
-function updateTranslations() {
-    const elements = document.querySelectorAll("[data-i18n]");
-    elements.forEach((el) => {
-        const key = el.getAttribute("data-i18n");
-        const translation = translations[currentLanguage][key];
-        if (translation) {
-	el.textContent = translation;
-        }
-    });
-
-    const titledElements = document.querySelectorAll("[data-i18n-title]");
-    titledElements.forEach((el) => {
-        const key = el.getAttribute("data-i18n-title");
-        const translation = translations[currentLanguage][key];
-        if (translation) {
-	el.title = translation;
-        }
-    });
-}
-
 const translations = {
     ru: {
         title: "РИСК КАЛЬКУЛЯТОР",
@@ -102,15 +70,129 @@ const translations = {
     },
 };
 
-function setRiskType(type) {
-    currentRiskType = type;
-    localStorage.setItem("riskType", currentRiskType); 
-    toggleActiveButtons(["btnPercent", "btnFixed"], type === "percent" ? "btnPercent" : "btnFixed");
-    calculate();
+function updateFavicon(accentColor = "#00ffaa") {
+    const svg = `
+	<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+	<path fill="${accentColor}" fill-rule="evenodd"
+	d="M16 32C7.163 32 0 24.837 0 16S7.163 0 16 0s16 7.163 16 16s-7.163 16-16 
+	16m7.189-17.98c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84l-1.728-.43l-.69 2.765c-.454-.114-.92-.22-1.385-.326l.695-2.783L15.596 
+	6l-.708 2.839q-.565-.127-1.104-.26l.002-.009l-2.384-.595l-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 
+	3.235q.073.017.18.057l-.183-.045l-1.13 4.532c-.086.212-.303.531-.793.41c.018.025-1.256-.313-1.256-.313l-.858 1.978l2.25.561c.418.105.828.215
+	1.231.318l-.715 2.872l1.727.43l.708-2.84q.707.19 1.378.357l-.706 2.828l1.728.43l.715-2.866c2.948.558 5.164.333 
+	6.097-2.333c.752-2.146-.037-3.385-1.588-4.192c1.13-.26 1.98-1.003 2.207-2.538m-3.95 5.538c-.533 2.147-4.148.986-5.32.695l.95-3.805c1.172.293
+	4.929.872 4.37 3.11m.535-5.569c-.487 1.953-3.495.96-4.47.717l.86-3.45c.975.243 4.118.696 3.61 2.733"/>
+	</svg>`;
+    const svgDataUrl = "data:image/svg+xml," + encodeURIComponent(svg);
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+        link = document.createElement("link");
+        link.rel = "icon";
+        document.head.appendChild(link);
+    }
+    link.href = svgDataUrl;
 }
 
 function toggleActiveButtons(ids, active) {
     ids.forEach((id) => document.getElementById(id).classList.toggle("active", id === active));
+}
+
+function toggleLanguage() {
+    currentLanguage = currentLanguage === "ru" ? "en" : "ru";
+    localStorage.setItem("language", currentLanguage);
+    window.langTexts = translations[currentLanguage];
+    const langToggle = document.getElementById("langToggle");
+    langToggle.textContent = currentLanguage.toUpperCase();
+    langToggle.classList.toggle("en", currentLanguage === "en");
+    updateTranslations();
+    calculate();
+    document.getElementById("langToggle").textContent = currentLanguage.toUpperCase();
+}
+
+function updateTranslations() {
+    const elements = document.querySelectorAll("[data-i18n]");
+    elements.forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        const translation = translations[currentLanguage][key];
+        if (translation) {
+	el.textContent = translation;
+        }
+    });
+    const titledElements = document.querySelectorAll("[data-i18n-title]");
+    titledElements.forEach((el) => {
+        const key = el.getAttribute("data-i18n-title");
+        const translation = translations[currentLanguage][key];
+        if (translation) {
+	el.title = translation;
+        }
+    });
+}
+
+function setOption({ key, value, buttons, activeId, updateStyle = false, extra = () => {} }) {
+    switch (key) {
+        case "riskType": currentRiskType = value; break;
+        case "tradeType": currentTradeType = value; break;
+        case "ATRPeriod":
+            currentATRPeriod = value;
+            stopMultiplier = value === 14 ? 0.4 : 0.6;
+            takeMultiplier = value === 14 ? 0.8 : 1.2;
+            document.getElementById("atrPeriodLabel").textContent = value;
+            break;
+    }
+    localStorage.setItem(key, value);
+    if (buttons && activeId) toggleActiveButtons(buttons, activeId);
+    if (updateStyle) {
+        const root = document.documentElement;
+        const isShort = value === "short";
+        root.style.setProperty("--accent", isShort ? "#ff5555" : "#00ffaa");
+        root.style.setProperty("--shadow-color", isShort ? "rgba(255, 85, 85, 0.3)" : "rgba(0, 255, 170, 0.3)");
+        root.style.setProperty("--copy-hover", isShort ? "#e14444" : "#00db8b");
+        updateFavicon(getComputedStyle(root).getPropertyValue("--accent").trim());
+    }
+    extra();
+    calculate();
+}
+
+function setRiskType(type) {
+    setOption({
+        key: "riskType",
+        value: type,
+        buttons: ["btnPercent", "btnFixed"],
+        activeId: type === "percent" ? "btnPercent" : "btnFixed"
+    });
+}
+
+function setTradeType(type) {
+    setOption({
+        key: "tradeType",
+        value: type,
+        buttons: ["btnLong", "btnShort"],
+        activeId: type === "long" ? "btnLong" : "btnShort",
+        updateStyle: true
+    });
+}
+
+function setATRPeriod(p) {
+    setOption({
+        key: "ATRPeriod",
+        value: p,
+        buttons: ["btnATR14", "btnATR5"],
+        activeId: `btnATR${p}`
+    });
+}
+
+function formatNumber(value) {
+    if (value === 0) return "0";
+    let formatted;
+    if (value < 0.000001) {
+        formatted = value.toExponential(2);
+    } else if (value < 1) {
+        formatted = value.toFixed(8);
+    } else if (value < 100) {
+        formatted = value.toFixed(6);
+    } else {
+        formatted = value.toFixed(2);
+    }
+    return formatted.replace(/\.?0+$/, "");
 }
 
 function openAtrModal() {
@@ -146,16 +228,6 @@ function openAtrModal() {
     updateTranslations();
 }
 
-function closeAtrModal() {
-    document.getElementById("atr-modal").style.display = "none";
-}
-
-document.getElementById("atr-modal").addEventListener("click", function (e) {
-    if (e.target === this) {
-        closeAtrModal();
-    }
-});
-
 function calculateATR() {
     let sum = 0,
         count = 0;
@@ -178,21 +250,6 @@ function calculateATR() {
         localStorage.setItem("atr", formattedATR); 
         calculate();
     }
-}
-
-function formatNumber(value) {
-    if (value === 0) return "0";
-    let formatted;
-    if (value < 0.000001) {
-        formatted = value.toExponential(2);
-    } else if (value < 1) {
-        formatted = value.toFixed(8);
-    } else if (value < 100) {
-        formatted = value.toFixed(6);
-    } else {
-        formatted = value.toFixed(2);
-    }
-    return formatted.replace(/\.?0+$/, "");
 }
 
 function calculate() {
@@ -270,16 +327,6 @@ function calculate() {
 	language: currentLanguage
 	};
 }
-		
-function setATRPeriod(p) {
-    currentATRPeriod = p;
-    localStorage.setItem("ATRPeriod", p); 
-    stopMultiplier = p === 14 ? 0.4 : 0.6;
-    takeMultiplier = p === 14 ? 0.8 : 1.2;
-    toggleActiveButtons(["btnATR14", "btnATR5"], `btnATR${p}`);
-    document.getElementById("atrPeriodLabel").textContent = p;
-    calculate();
-}
 
 function copyResultToClipboard() {
     const text = document.getElementById("result").innerText;
@@ -297,61 +344,33 @@ function copyResultToClipboard() {
     });
 }
 
-function setTradeType(type) {
-    currentTradeType = type;
-    localStorage.setItem("tradeType", currentTradeType);
-    toggleActiveButtons(["btnLong", "btnShort"], type === "long" ? "btnLong" : "btnShort");
-    const root = document.documentElement;
-    const isShort = type === "short";
-    root.style.setProperty("--accent", isShort ? "#ff5555" : "#00ffaa");
-    root.style.setProperty("--shadow-color", isShort ? "rgba(255, 85, 85, 0.3)" : "rgba(0, 255, 170, 0.3)");
-    root.style.setProperty("--copy-hover", isShort ? "#e14444" : "#00db8b");
-    calculate();
-    const accentColor = getComputedStyle(root).getPropertyValue("--accent").trim();
-    updateFavicon(accentColor);
-}
-
-function updateFavicon(accentColor = "#00ffaa") {
-    const svg = `
-	<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-	<path fill="${accentColor}" fill-rule="evenodd"
-	d="M16 32C7.163 32 0 24.837 0 16S7.163 0 16 0s16 7.163 16 16s-7.163 16-16 
-	16m7.189-17.98c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84l-1.728-.43l-.69 2.765c-.454-.114-.92-.22-1.385-.326l.695-2.783L15.596 
-	6l-.708 2.839q-.565-.127-1.104-.26l.002-.009l-2.384-.595l-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 
-	3.235q.073.017.18.057l-.183-.045l-1.13 4.532c-.086.212-.303.531-.793.41c.018.025-1.256-.313-1.256-.313l-.858 1.978l2.25.561c.418.105.828.215
-	1.231.318l-.715 2.872l1.727.43l.708-2.84q.707.19 1.378.357l-.706 2.828l1.728.43l.715-2.866c2.948.558 5.164.333 
-	6.097-2.333c.752-2.146-.037-3.385-1.588-4.192c1.13-.26 1.98-1.003 2.207-2.538m-3.95 5.538c-.533 2.147-4.148.986-5.32.695l.95-3.805c1.172.293
-	4.929.872 4.37 3.11m.535-5.569c-.487 1.953-3.495.96-4.47.717l.86-3.45c.975.243 4.118.696 3.61 2.733"/>
-	</svg>`;
-    const svgDataUrl = "data:image/svg+xml," + encodeURIComponent(svg);
-    let link = document.querySelector("link[rel~='icon']");
-    if (!link) {
-        link = document.createElement("link");
-        link.rel = "icon";
-        document.head.appendChild(link);
+document.addEventListener("click", (e) => {
+    const modal = document.getElementById("atr-modal");
+    if (!modal || modal.style.display === "none") return;
+    if (e.target === modal || e.target.id === "closeAtrBtn") {
+        modal.style.display = "none";
     }
-    link.href = svgDataUrl;
-}
+});
 
 window.addEventListener("DOMContentLoaded", () => {
-	currentLanguage = localStorage.getItem("language") || "ru";
+    currentLanguage = localStorage.getItem("language") || "ru";
     document.getElementById("langToggle").textContent = currentLanguage.toUpperCase();
-	document.getElementById("langToggle").classList.toggle("en", currentLanguage === "en");
-	window.langTexts = translations[currentLanguage];
-	updateTranslations();
-	currentRiskType = localStorage.getItem("riskType") || "percent";
-	currentTradeType = localStorage.getItem("tradeType") || "long";
-	currentATRPeriod = parseInt(localStorage.getItem("ATRPeriod")) || 14;
-	setRiskType(currentRiskType);
-	setTradeType(currentTradeType);
-	setATRPeriod(currentATRPeriod);
-	updateFavicon(getComputedStyle(document.documentElement).getPropertyValue("--accent").trim());
-	["deposit", "riskValue", "CoinPrice", "atr"].forEach(id => {
-		const input = document.getElementById(id);
-		input.value = localStorage.getItem(id) || input.value;
-		input.addEventListener("input", () => {
-			localStorage.setItem(id, input.value);
-		});
-	});
-	calculate();
+    document.getElementById("langToggle").classList.toggle("en", currentLanguage === "en");
+    window.langTexts = translations[currentLanguage];
+    updateTranslations();
+    currentRiskType = localStorage.getItem("riskType") || "percent";
+    currentTradeType = localStorage.getItem("tradeType") || "long";
+    currentATRPeriod = parseInt(localStorage.getItem("ATRPeriod")) || 14;
+    setRiskType(currentRiskType);
+    setTradeType(currentTradeType);
+    setATRPeriod(currentATRPeriod);
+    updateFavicon(getComputedStyle(document.documentElement).getPropertyValue("--accent").trim());
+    ["deposit", "riskValue", "CoinPrice", "atr"].forEach(id => {
+        const input = document.getElementById(id);
+        input.value = localStorage.getItem(id) || input.value;
+        input.addEventListener("input", () => {
+        localStorage.setItem(id, input.value);
+        });
+    });
+    calculate();
 });
