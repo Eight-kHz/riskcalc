@@ -3,7 +3,7 @@ let currentTradeType = "long";
 let currentATRPeriod = 14;
 let currentLanguage = "ru";
 let stopMultiplier = 0.4;
-let takeMultiplier = 0.8;
+let takeMultiplier = 1.2;
 
 const translations = {
     ru: {
@@ -136,7 +136,7 @@ function setOption({ key, value, buttons, activeId, updateStyle = false, extra =
         case "ATRPeriod":
             currentATRPeriod = value;
             stopMultiplier = value === 14 ? 0.4 : 0.6;
-            takeMultiplier = value === 14 ? 0.8 : 1.2;
+            takeMultiplier = value === 14 ? 1.2 : 1.8;
             document.getElementById("atrPeriodLabel").textContent = value;
             break;
     }
@@ -280,7 +280,7 @@ function calculate() {
         return;
     }
     let stopMultiplier = currentATRPeriod === 14 ? 0.4 : 0.6;
-    let takeMultiplier = currentATRPeriod === 14 ? 0.8 : 1.2;
+    let takeMultiplier = currentATRPeriod === 14 ? 1.2 : 1.8;
     const stop = atr * stopMultiplier;
     if (stop < 0.01) {
         resultDiv.innerHTML = `<span style='color:white; font-weight:bold;'>${window.langTexts.warnings.atr}</span>`;
